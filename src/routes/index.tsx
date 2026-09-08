@@ -582,51 +582,87 @@ function Index() {
         </section>
 
         <section id="contact" className="max-w-7xl mx-auto px-6">
-          <div className="bg-white/5 rounded-[40px] p-10 sm:p-12 lg:p-24 text-center border border-white/5">
-            <h2 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter mb-8">
-              Ready to build?
-            </h2>
-            <p className="max-w-xl mx-auto text-muted-foreground mb-12">
-              Currently accepting freelance projects and full-time inquiries. Let's create something
-              meaningful.
-            </p>
-            <div className="flex flex-wrap justify-center items-center gap-6">
-              <a
-                href={`mailto:${EMAIL}`}
-                className="bg-accent text-accent-foreground px-10 py-5 rounded-full font-bold uppercase text-xs tracking-widest hover:opacity-90 transition-opacity"
-              >
-                Send Email
-              </a>
-              <div className="flex gap-4 items-center">
+          <Reveal>
+            <div className="relative overflow-hidden bg-white/5 rounded-[40px] p-10 sm:p-12 lg:p-20 border border-white/5">
+              <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 size-[36rem] rounded-full bg-accent/15 blur-[120px] animate-glow" />
+              <div className="relative text-center">
+                <img
+                  src={logo}
+                  alt="EP Studio logo"
+                  loading="lazy"
+                  width={80}
+                  height={80}
+                  className="mx-auto size-16 mb-8 animate-float"
+                />
+                <h2 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter mb-6">
+                  Let's build yours.
+                </h2>
+                <p className="max-w-xl mx-auto text-muted-foreground mb-12">
+                  Tell EP Studio about your project — websites, landing pages, product interfaces.
+                  Fastest reply is on WhatsApp.
+                </p>
+              </div>
+
+              <div className="relative grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                {[
+                  { label: "WhatsApp", value: PHONE, href: WHATSAPP },
+                  { label: "Call", value: PHONE, href: `tel:+234${PHONE.slice(1)}` },
+                  { label: "Email", value: EMAIL, href: `mailto:${EMAIL}` },
+                  { label: "LinkedIn", value: "Esor Ezekiel", href: LINKEDIN },
+                ].map((c) => (
+                  <a
+                    key={c.label}
+                    href={c.href}
+                    target={c.href.startsWith("http") ? "_blank" : undefined}
+                    rel="noreferrer"
+                    className="group rounded-2xl border border-white/10 bg-background/40 p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-accent/50 hover:shadow-[0_20px_50px_-25px_var(--accent)]"
+                  >
+                    <span className="block font-mono text-[10px] uppercase tracking-[0.25em] text-accent mb-2">
+                      {c.label}
+                    </span>
+                    <span className="block text-sm font-bold break-words group-hover:text-accent transition-colors">
+                      {c.value}
+                    </span>
+                  </a>
+                ))}
+              </div>
+
+              <div className="relative mt-10 flex flex-wrap justify-center gap-4">
                 <a
-                  href={GITHUB}
-                  aria-label="GitHub profile"
-                  className="size-12 rounded-full border border-white/20 grid place-items-center hover:bg-white/10 transition-colors"
+                  href={WHATSAPP}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-accent text-accent-foreground px-10 py-5 rounded-full font-bold uppercase text-xs tracking-widest hover:shadow-[0_0_40px_-6px_var(--accent)] transition-shadow"
                 >
-                  <span className="text-[10px] font-mono">GH</span>
+                  Chat on WhatsApp
                 </a>
                 <a
-                  href={LINKEDIN}
-                  aria-label="LinkedIn profile"
-                  className="size-12 rounded-full border border-white/20 grid place-items-center hover:bg-white/10 transition-colors"
+                  href={GITHUB}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="border border-white/20 px-10 py-5 rounded-full font-mono text-xs uppercase tracking-widest hover:border-accent hover:text-accent transition-colors"
                 >
-                  <span className="text-[10px] font-mono">LI</span>
+                  GitHub
                 </a>
               </div>
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
 
       <footer className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-border">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          © {new Date().getFullYear()} Esor Ezekiel
+        <span className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          <img src={logo} alt="" aria-hidden="true" loading="lazy" width={24} height={24} className="size-6" />
+          © {new Date().getFullYear()} EP Studio — Esor Ezekiel
         </span>
-        <div className="flex gap-8 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          <a href={LINKEDIN} className="hover:text-accent">
+        <div className="flex flex-wrap justify-center gap-6 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          <a href={WHATSAPP} target="_blank" rel="noreferrer" className="hover:text-accent">
+            WhatsApp
+          </a>
+          <a href={LINKEDIN} target="_blank" rel="noreferrer" className="hover:text-accent">
             LinkedIn
           </a>
-          <a href={GITHUB} className="hover:text-accent">
+          <a href={GITHUB} target="_blank" rel="noreferrer" className="hover:text-accent">
             GitHub
           </a>
           <a href={`mailto:${EMAIL}`} className="hover:text-accent">
@@ -634,6 +670,7 @@ function Index() {
           </a>
         </div>
       </footer>
+
     </div>
   );
 }
