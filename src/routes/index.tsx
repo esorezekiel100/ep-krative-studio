@@ -1,9 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import portrait from "@/assets/esor-portrait.jpg.asset.json";
-import kingsView from "@/assets/kings-view.jpg";
-import optimaCare from "@/assets/optimacare.jpg";
-import epCreative from "@/assets/ep-creative.jpg";
-import nextNews from "@/assets/nextnews.jpg";
+import oppora from "@/assets/work/oppora.jpg";
+import bridgeview from "@/assets/work/bridgeview.jpg";
+import teaShop from "@/assets/work/tea-shop.jpg";
+import marketflow from "@/assets/work/marketflow.jpg";
+import punique from "@/assets/work/punique.jpg";
+import marksGarage from "@/assets/work/marks-garage.jpg";
+import vertexbuild from "@/assets/work/vertexbuild.jpg";
+import usaLogistics from "@/assets/work/usa-logistics.jpg";
+import agroMarket from "@/assets/work/agro-market.jpg";
+import newbreed from "@/assets/work/newbreed.jpg";
+import fundora from "@/assets/work/fundora.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,47 +34,122 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const GITHUB = "https://github.com/esorezekiel";
+const GITHUB = "https://github.com/esorezekiel100";
 const LINKEDIN = "https://www.linkedin.com/in/esor-ezekiel-173402212";
 const EMAIL = "esorezekiel@gmail.com";
 
-const indexProjects = [
+type Project = {
+  name: string;
+  desc: string;
+  tech: string[];
+  img: string;
+  live: string;
+  code: string;
+};
+
+const featured: Project[] = [
   {
-    n: "01",
-    name: "Solar-Max",
-    desc: "Full-scale landing page for a premium solar energy company.",
-    tech: ["React", "Tailwind", "Vite"],
+    name: "Oppora",
+    desc: "Global opportunity hub aggregating verified scholarships, funding and fellowships into one trusted platform.",
+    tech: ["React", "TypeScript", "Tailwind"],
+    img: oppora,
+    live: "https://oppora-brown.vercel.app",
+    code: "https://github.com/esorezekiel100/https-github.com-esorezekiel100-Oppora",
   },
   {
-    n: "02",
-    name: "SpiceDesk",
-    desc: "Dark-themed mobile app UI for a premium restaurant experience.",
-    tech: ["React", "Tailwind", "Dark UI"],
+    name: "BridgeView Auto",
+    desc: "Neighbourhood mechanic shop in Lower Manhattan — inspections, repairs and booking, built to convert.",
+    tech: ["React", "TypeScript", "Tailwind"],
+    img: bridgeview,
+    live: "https://bridge-view-ashen.vercel.app",
+    code: "https://github.com/esorezekiel100/BridgeView",
+  },
+  {
+    name: "Modern Tea Shop",
+    desc: "Playful brand site for a Midtown Manhattan boba and leaf-tea house, rich in motion and imagery.",
+    tech: ["React", "TypeScript", "Tailwind"],
+    img: teaShop,
+    live: "https://morden-tea-shop.vercel.app",
+    code: "https://github.com/esorezekiel100/Morden-Tea-Shop",
+  },
+  {
+    name: "MarketFlow",
+    desc: "Dark, high-contrast e-commerce experience with a polished authentication and storefront flow.",
+    tech: ["React", "TypeScript", "Tailwind"],
+    img: marketflow,
+    live: "https://market-flow-psi.vercel.app",
+    code: "https://github.com/esorezekiel100/MarketFlow",
   },
 ];
 
-const gridProjects = [
+const gridProjects: Project[] = [
   {
-    name: "kings-view",
-    img: kingsView,
-    desc: "Vite-powered frontend build with a clean, data-dense interface.",
+    name: "Punique's Kitchen",
+    desc: "Warm restaurant site with menu, story and reservation flow.",
+    tech: ["React", "Tailwind"],
+    img: punique,
+    live: "https://punique-s.vercel.app",
+    code: "https://github.com/esorezekiel100/https-github.com-esorezekiel100-punique-s-",
   },
   {
-    name: "OptimaCare",
-    img: optimaCare,
-    desc: "Healthcare-themed frontend prioritising accessibility and speed.",
+    name: "Mark's Garage",
+    desc: "Auto service brand site for a workshop in Naxxar, Malta.",
+    tech: ["React", "TypeScript"],
+    img: marksGarage,
+    live: "https://mark-s-garage.vercel.app",
+    code: "https://github.com/esorezekiel100/mark-sGarage",
   },
   {
-    name: "EP-CREATIVE",
-    img: epCreative,
-    desc: "Creative agency site built on core HTML, CSS and JavaScript.",
+    name: "VertexBuild Co.",
+    desc: "Construction company site with services, projects and quotes.",
+    tech: ["React", "Tailwind"],
+    img: vertexbuild,
+    live: "https://vertex-build-co.vercel.app",
+    code: "https://github.com/esorezekiel100/https-github.com-esorezekiel100-VertexBuild-Co",
   },
   {
-    name: "nextnews",
-    img: nextNews,
-    desc: "News and media frontend with a fast, content-first layout.",
+    name: "USA Logistics",
+    desc: "Logistics and transport company site with tracking-style UI.",
+    tech: ["React", "TypeScript"],
+    img: usaLogistics,
+    live: "https://usa-logistic-transport.vercel.app",
+    code: "https://github.com/esorezekiel100/https-github.com-esorezekiel100-USA-logistic-and-transport",
+  },
+  {
+    name: "Agro-Market",
+    desc: "Agricultural marketplace frontend for produce buyers and sellers.",
+    tech: ["JavaScript", "Tailwind"],
+    img: agroMarket,
+    live: "https://agro-market-red.vercel.app",
+    code: "https://github.com/esorezekiel100/Agro-market",
+  },
+  {
+    name: "Newbreed Worship Centre",
+    desc: "Church website with events, sermons and community sections.",
+    tech: ["React", "TypeScript"],
+    img: newbreed,
+    live: "https://newbred-worship-center-intl.vercel.app",
+    code: "https://github.com/esorezekiel100/https-github.com-esorezekiel100-NEWBRED-WORSHIP-CENTER",
+  },
+  {
+    name: "Fundora",
+    desc: "Fundraising platform interface with campaign cards and dashboards.",
+    tech: ["React", "TypeScript"],
+    img: fundora,
+    live: "https://fundora-self.vercel.app",
+    code: "https://github.com/esorezekiel100/Fundora",
   },
 ];
+
+const earlier = [
+  { name: "Solar-Max", desc: "Solar energy landing page", code: "https://github.com/esorezekiel100/Solar-Max" },
+  { name: "SpiceDesk", desc: "Restaurant mobile app UI", code: "https://github.com/esorezekiel100/SpiceDesk" },
+  { name: "kings-view", desc: "React / Vite frontend build", code: "https://github.com/esorezekiel100/kings-view" },
+  { name: "OptimaCare", desc: "Healthcare frontend", code: "https://github.com/esorezekiel100/OptimaCare" },
+  { name: "EP-CREATIVE", desc: "Creative agency site", code: "https://github.com/esorezekiel100/EP-CREATIVE" },
+  { name: "nextnews", desc: "News and media frontend", code: "https://github.com/esorezekiel100/nextnews" },
+];
+
 
 const skills = [
   ["Base", "HTML5 / CSS3"],
