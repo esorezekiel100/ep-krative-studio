@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import logo from "@/assets/ep-studio-logo.png";
 import portrait from "@/assets/esor-portrait.jpg.asset.json";
+
 import oppora from "@/assets/work/oppora.jpg";
 import bridgeview from "@/assets/work/bridgeview.jpg";
 import teaShop from "@/assets/work/tea-shop.jpg";
@@ -15,17 +18,17 @@ import fundora from "@/assets/work/fundora.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Esor Ezekiel — Frontend Web Developer" },
+      { title: "EP Studio — Web Design & Frontend Development" },
       {
         name: "description",
         content:
-          "Esor Ezekiel is a frontend web developer building fast, responsive, pixel-perfect web experiences with React, Tailwind CSS and modern JavaScript.",
+          "EP Studio, led by Esor Ezekiel, designs and builds fast, responsive, pixel-perfect websites and web apps with React, Tailwind CSS and modern JavaScript.",
       },
-      { property: "og:title", content: "Esor Ezekiel — Frontend Web Developer" },
+      { property: "og:title", content: "EP Studio — Web Design & Frontend Development" },
       {
         property: "og:description",
         content:
-          "Portfolio of Esor Ezekiel: React, Tailwind CSS and JavaScript projects built for speed, accessibility and detail.",
+          "EP Studio builds high-performing websites for businesses: landing pages, brand sites and product UIs, crafted for speed and detail.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -35,8 +38,11 @@ export const Route = createFileRoute("/")({
 });
 
 const GITHUB = "https://github.com/esorezekiel100";
-const LINKEDIN = "https://www.linkedin.com/in/esor-ezekiel-173402212";
-const EMAIL = "esorezekiel@gmail.com";
+const LINKEDIN = "https://www.linkedin.com/in/esor-ezekiel-173402212/";
+const EMAIL = "esorezekiel100@gmail.com";
+const PHONE = "08085381296";
+const WHATSAPP = "https://wa.me/2348085381296";
+
 
 type Project = {
   name: string;
@@ -162,56 +168,198 @@ const skills = [
   ["Performance", "Core Web Vitals"],
 ];
 
-function Index() {
+function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-background">
-      <nav className="fixed top-0 w-full z-50 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
-          <span className="font-mono text-sm tracking-tighter uppercase font-bold text-accent">
-            Esor Ezekiel
-          </span>
-          <div className="flex gap-6 sm:gap-8 text-[10px] font-mono uppercase tracking-widest">
-            <a href="#work" className="hover:text-accent transition-colors">
-              Work
-            </a>
-            <a href="#about" className="hover:text-accent transition-colors">
-              About
-            </a>
-            <a href="#contact" className="hover:text-accent transition-colors">
-              Contact
+    <div
+      ref={ref}
+      style={{ transitionDelay: `${delay}ms` }}
+      className={`transition-all duration-[900ms] ease-out-expo ${
+        shown ? "opacity-100 translate-y-0 blur-0" : "opacity-0 translate-y-10 blur-[6px]"
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+
+const marqueeWords = [
+  "Web Design",
+  "Frontend Engineering",
+  "Landing Pages",
+  "Brand Sites",
+  "React & Tailwind",
+  "Motion & Interaction",
+];
+
+function Marquee() {
+  return (
+    <div className="relative overflow-hidden border-y border-border py-5 mb-32 [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
+      <div className="flex w-max animate-marquee gap-10 will-change-transform">
+        {[0, 1].map((dup) => (
+          <div key={dup} className="flex shrink-0 gap-10" aria-hidden={dup === 1}>
+            {marqueeWords.map((w) => (
+              <span
+                key={w}
+                className="flex items-center gap-10 font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground"
+              >
+                {w}
+                <span className="text-accent">✦</span>
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Index() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-background overflow-x-hidden">
+      <div className="pointer-events-none fixed inset-0 -z-10 opacity-70">
+        <div className="absolute -top-40 -left-32 size-[42rem] rounded-full bg-accent/15 blur-[140px] animate-drift" />
+        <div className="absolute top-1/2 -right-40 size-[38rem] rounded-full bg-accent/10 blur-[150px] animate-drift [animation-delay:-6s]" />
+      </div>
+
+      <nav
+        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
+          scrolled
+            ? "border-b border-border bg-background/70 backdrop-blur-xl py-2"
+            : "border-b border-transparent py-4"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
+          <a href="#top" className="group flex items-center gap-3">
+            <span className="relative grid place-items-center size-10 rounded-xl bg-accent/10 ring-1 ring-accent/25 transition-transform duration-500 group-hover:rotate-[-8deg] group-hover:scale-105">
+              <span className="absolute inset-0 rounded-xl bg-accent/25 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <img
+                src={logo}
+                alt="EP Studio logo"
+                width={40}
+                height={40}
+                className="relative size-7 object-contain"
+              />
+            </span>
+            <span className="font-mono text-sm tracking-[0.2em] uppercase font-bold">
+              EP <span className="text-accent">Studio</span>
+            </span>
+          </a>
+          <div className="flex items-center gap-6 sm:gap-8 text-[10px] font-mono uppercase tracking-widest">
+            {[
+              ["Work", "#work"],
+              ["About", "#about"],
+              ["Contact", "#contact"],
+            ].map(([label, href]) => (
+              <a
+                key={href}
+                href={href}
+                className="relative hidden sm:inline-block hover:text-accent transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-accent after:transition-all after:duration-300 hover:after:w-full"
+              >
+                {label}
+              </a>
+            ))}
+            <a
+              href={WHATSAPP}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full bg-accent px-4 py-2 text-accent-foreground font-bold hover:shadow-[0_0_30px_-4px_var(--accent)] transition-shadow"
+            >
+              WhatsApp
             </a>
           </div>
         </div>
       </nav>
 
-      <main className="pt-32 pb-24">
-        <section className="max-w-7xl mx-auto px-6 mb-32 grid lg:grid-cols-12 gap-12 items-end">
-          <div className="lg:col-span-7 animate-fade-up">
+      <main id="top" className="pt-32 pb-24">
+        <section className="max-w-7xl mx-auto px-6 mb-24 grid lg:grid-cols-12 gap-12 items-end">
+          <div className="lg:col-span-7">
+            <div className="animate-fade-up flex items-center gap-3 mb-8">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full rounded-full bg-accent opacity-75 animate-ping" />
+                <span className="relative inline-flex size-2 rounded-full bg-accent" />
+              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                Available for new projects
+              </span>
+            </div>
             <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-balance mb-8">
-              Frontend <span className="text-accent">Web</span> Developer
+              <span className="block animate-fade-up">We build</span>
+              <span className="block animate-fade-up [animation-delay:120ms] bg-[linear-gradient(100deg,var(--accent),oklch(0.9_0.16_85),var(--accent))] bg-[length:220%_auto] bg-clip-text text-transparent animate-shimmer">
+                web experiences
+              </span>
+              <span className="block animate-fade-up [animation-delay:240ms]">that convert.</span>
             </h1>
-            <p className="max-w-[40ch] text-lg text-muted-foreground mb-10">
-              I'm Esor Ezekiel. I build fast, responsive, pixel-perfect web experiences that bridge
-              the gap between complex logic and human interaction.
+            <p className="max-w-[42ch] text-lg text-muted-foreground mb-10 animate-fade-up [animation-delay:320ms]">
+              EP Studio is the design and frontend practice of Esor Ezekiel — fast, responsive,
+              pixel-perfect websites for businesses that want to look serious online.
             </p>
-            <a
-              href="#work"
-              className="inline-block bg-foreground text-background px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest hover:bg-accent transition-all duration-300"
-            >
-              View My Work
-            </a>
+            <div className="flex flex-wrap gap-4 animate-fade-up [animation-delay:400ms]">
+              <a
+                href="#work"
+                className="group inline-flex items-center gap-3 bg-foreground text-background px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest hover:bg-accent transition-all duration-300"
+              >
+                View Our Work
+                <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+              </a>
+              <a
+                href={WHATSAPP}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-3 border border-white/20 px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest hover:border-accent hover:text-accent transition-colors"
+              >
+                Hire EP Studio
+              </a>
+            </div>
           </div>
-          <div className="lg:col-span-5 relative animate-fade-up [animation-delay:200ms]">
-            <div className="absolute -inset-20 bg-accent/20 blur-[100px] rounded-full z-0" />
+          <div className="lg:col-span-5 relative animate-fade-up [animation-delay:300ms] group">
+            <div className="absolute -inset-20 bg-accent/20 blur-[100px] rounded-full z-0 animate-glow" />
             <img
               src={portrait.url}
-              alt="Portrait of Esor Ezekiel standing in front of a large glowing sun"
+              alt="Esor Ezekiel, founder of EP Studio, standing in front of a large glowing sun"
               width={1080}
               height={1350}
-              className="relative z-10 w-full aspect-[4/5] object-cover rounded-2xl outline-1 -outline-offset-1 outline-white/10"
+              className="relative z-10 w-full aspect-[4/5] object-cover rounded-2xl outline-1 -outline-offset-1 outline-white/10 transition-transform duration-700 group-hover:scale-[1.02]"
+            />
+            <img
+              src={logo}
+              alt=""
+              aria-hidden="true"
+              width={96}
+              height={96}
+              className="absolute z-20 -bottom-6 -left-6 size-20 rounded-2xl bg-background/80 backdrop-blur p-3 ring-1 ring-white/10 animate-float"
             />
           </div>
         </section>
+
+        <Marquee />
+
 
         <section id="about" className="max-w-7xl mx-auto px-6 mb-32">
           <div className="grid lg:grid-cols-12 gap-12">
