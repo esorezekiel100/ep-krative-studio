@@ -234,79 +234,149 @@ function Index() {
         </section>
 
         <section id="work" className="max-w-7xl mx-auto px-6 mb-32">
-          <div className="flex justify-between items-end border-b border-border pb-6 mb-12">
+          <div className="flex justify-between items-end border-b border-border pb-6 mb-16">
             <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
-              Selected Projects
+              Selected Client Work
             </h2>
-            <span className="font-mono text-[10px] text-muted-foreground">(06 Total)</span>
+            <span className="font-mono text-[10px] text-muted-foreground">
+              ({featured.length + gridProjects.length + earlier.length} Projects)
+            </span>
           </div>
 
-          <div>
-            {indexProjects.map((p) => (
+          <div className="space-y-24">
+            {featured.map((p, i) => (
               <article
                 key={p.name}
-                className="group border-b border-border py-12 flex flex-col md:flex-row gap-8 md:items-center"
+                className="group grid lg:grid-cols-12 gap-8 lg:gap-12 items-center"
               >
-                <span className="font-mono text-sm text-muted-foreground shrink-0 w-12">{p.n}</span>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2 group-hover:text-accent transition-colors">
+                <a
+                  href={p.live}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`lg:col-span-7 block overflow-hidden rounded-2xl border border-white/10 ${
+                    i % 2 === 1 ? "lg:order-2" : ""
+                  }`}
+                >
+                  <img
+                    src={p.img}
+                    alt={`Screenshot of the ${p.name} website built by Esor Ezekiel`}
+                    loading="lazy"
+                    width={1280}
+                    height={800}
+                    className="w-full aspect-[16/10] object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                </a>
+                <div className="lg:col-span-5">
+                  <span className="font-mono text-[10px] text-muted-foreground">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="text-3xl sm:text-4xl font-bold tracking-tight mt-2 mb-3 group-hover:text-accent transition-colors">
                     {p.name}
                   </h3>
                   <p className="text-muted-foreground max-w-md">{p.desc}</p>
-                  <div className="flex flex-wrap gap-3 mt-4">
+                  <div className="flex flex-wrap gap-3 mt-5">
                     {p.tech.map((t) => (
                       <span key={t} className="text-[10px] font-mono px-2 py-1 bg-white/5 rounded">
                         {t}
                       </span>
                     ))}
                   </div>
-                </div>
-                <div className="flex gap-6 font-mono text-[10px] uppercase tracking-widest shrink-0">
-                  <a
-                    href={GITHUB}
-                    className="underline underline-offset-4 decoration-white/20 hover:decoration-accent"
-                  >
-                    Live Demo
-                  </a>
-                  <a
-                    href={GITHUB}
-                    className="underline underline-offset-4 decoration-white/20 hover:decoration-accent"
-                  >
-                    View Code
-                  </a>
+                  <div className="flex gap-6 font-mono text-[10px] uppercase tracking-widest mt-8">
+                    <a
+                      href={p.live}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-4 decoration-accent hover:text-accent"
+                    >
+                      Live Demo
+                    </a>
+                    <a
+                      href={p.code}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-4 decoration-white/20 hover:decoration-accent"
+                    >
+                      View Code
+                    </a>
+                  </div>
                 </div>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-6 mb-32 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <section className="max-w-7xl mx-auto px-6 mb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {gridProjects.map((p) => (
             <article
               key={p.name}
-              className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-accent/30 transition-all group"
+              className="bg-white/5 p-5 rounded-2xl border border-white/5 hover:border-accent/30 transition-all group"
             >
-              <img
-                src={p.img}
-                alt={`Preview of the ${p.name} project`}
-                loading="lazy"
-                width={768}
-                height={768}
-                className="w-full aspect-square mb-6 rounded-lg object-cover bg-white/5"
-              />
+              <a href={p.live} target="_blank" rel="noreferrer" className="block">
+                <img
+                  src={p.img}
+                  alt={`Screenshot of the ${p.name} website built by Esor Ezekiel`}
+                  loading="lazy"
+                  width={1280}
+                  height={800}
+                  className="w-full aspect-[16/10] mb-6 rounded-lg object-cover object-top bg-white/5"
+                />
+              </a>
               <h4 className="text-xl font-bold mb-2">{p.name}</h4>
               <p className="text-sm text-muted-foreground mb-4">{p.desc}</p>
+              <div className="flex flex-wrap gap-2 mb-5">
+                {p.tech.map((t) => (
+                  <span key={t} className="text-[10px] font-mono px-2 py-1 bg-white/5 rounded">
+                    {t}
+                  </span>
+                ))}
+              </div>
               <div className="flex gap-4 font-mono text-[10px] uppercase tracking-widest">
-                <a href={GITHUB} className="group-hover:text-accent transition-colors">
+                <a
+                  href={p.live}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-accent hover:opacity-80"
+                >
                   Live Demo
                 </a>
-                <a href={GITHUB} className="group-hover:text-accent transition-colors">
+                <a
+                  href={p.code}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-accent transition-colors"
+                >
                   View Code
                 </a>
               </div>
             </article>
           ))}
         </section>
+
+        <section className="max-w-7xl mx-auto px-6 mb-32">
+          <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-8">
+            More Builds
+          </h2>
+          <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8">
+            {earlier.map((p) => (
+              <li key={p.name} className="border-b border-border">
+                <a
+                  href={p.code}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-baseline justify-between gap-4 py-5 group"
+                >
+                  <span className="font-bold group-hover:text-accent transition-colors">
+                    {p.name}
+                  </span>
+                  <span className="text-[11px] font-mono text-muted-foreground text-right">
+                    {p.desc}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+
 
         <section className="max-w-7xl mx-auto px-6 mb-32 py-24 border-y border-border">
           <div className="grid lg:grid-cols-12 gap-12">
