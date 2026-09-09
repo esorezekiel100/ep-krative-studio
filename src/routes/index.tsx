@@ -798,6 +798,24 @@ function Index() {
         </div>
       </footer>
 
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/90 backdrop-blur-xl px-4 py-3 flex gap-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+        <a
+          href="#rates"
+          className="flex-1 rounded-full border border-white/20 py-3 text-center font-mono text-[10px] uppercase tracking-widest"
+        >
+          See Rates
+        </a>
+        <a
+          href={WHATSAPP}
+          target="_blank"
+          rel="noreferrer"
+          className="flex-1 rounded-full bg-accent py-3 text-center font-mono text-[10px] font-bold uppercase tracking-widest text-accent-foreground"
+        >
+          WhatsApp
+        </a>
+      </div>
+
+
     </div>
   );
 }
