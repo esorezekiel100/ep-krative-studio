@@ -17,12 +17,15 @@ import fundora from "@/assets/work/fundora.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
+    links: [
+      { rel: "preload", as: "image", href: portrait.url, fetchpriority: "high" },
+    ],
     meta: [
       { title: "EP Studio — Web Design & Frontend Development" },
       {
         name: "description",
         content:
-          "EP Studio, led by Esor Ezekiel, designs and builds fast, responsive, pixel-perfect websites and web apps with React, Tailwind CSS and modern JavaScript.",
+          "EP Studio, led by Esor Ezekiel, designs and builds fast, responsive, pixel-perfect websites and web apps with React, Tailwind CSS and modern JavaScript. Clear project rates.",
       },
       { property: "og:title", content: "EP Studio — Web Design & Frontend Development" },
       {
