@@ -398,6 +398,8 @@ function Index() {
               alt="Esor Ezekiel, founder of EP Studio, standing in front of a large glowing sun"
               width={1080}
               height={1350}
+              fetchPriority="high"
+              decoding="async"
               className="relative z-10 w-full aspect-[4/5] object-cover rounded-2xl outline-1 -outline-offset-1 outline-white/10 transition-transform duration-700 group-hover:scale-[1.02]"
             />
             <img
