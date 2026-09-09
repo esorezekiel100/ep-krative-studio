@@ -777,7 +777,7 @@ function Index() {
         </section>
       </main>
 
-      <footer className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-border">
+      <footer className="max-w-7xl mx-auto px-6 py-12 pb-28 md:pb-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-border">
         <span className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           <img src={logo} alt="" aria-hidden="true" loading="lazy" width={24} height={24} className="size-6" />
           © {new Date().getFullYear()} EP Studio — Esor Ezekiel
