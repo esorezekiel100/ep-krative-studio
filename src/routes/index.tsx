@@ -327,6 +327,7 @@ function Index() {
             {[
               ["Work", "#work"],
               ["About", "#about"],
+              ["Rates", "#rates"],
               ["Contact", "#contact"],
             ].map(([label, href]) => (
               <a
