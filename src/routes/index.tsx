@@ -171,6 +171,55 @@ const skills = [
   ["Performance", "Core Web Vitals"],
 ];
 
+const packages = [
+  {
+    name: "Landing Page",
+    price: "$350",
+    note: "from / one page",
+    time: "3–5 days",
+    items: [
+      "One high-converting page",
+      "Mobile-first responsive build",
+      "Contact / WhatsApp integration",
+      "Basic SEO + speed tuning",
+      "1 round of revisions",
+    ],
+    featured: false,
+  },
+  {
+    name: "Business Website",
+    price: "$750",
+    note: "from / 4–6 pages",
+    time: "1–2 weeks",
+    items: [
+      "Up to 6 custom pages",
+      "Bespoke design, no templates",
+      "Animations & interactions",
+      "SEO, analytics & performance pass",
+      "2 rounds of revisions",
+      "30 days post-launch support",
+    ],
+    featured: true,
+  },
+  {
+    name: "Web App / Custom",
+    price: "$1,500",
+    note: "from / scoped per project",
+    time: "3+ weeks",
+    items: [
+      "Dashboards, portals, product UIs",
+      "React + Tailwind architecture",
+      "API / backend integration",
+      "Accessibility & QA",
+      "Ongoing retainer available",
+    ],
+    featured: false,
+  },
+];
+
+const HOURLY = "$25/hour";
+
+
 function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
