@@ -636,6 +636,78 @@ function Index() {
           </div>
         </section>
 
+        <section id="rates" className="max-w-7xl mx-auto px-6 mb-32">
+          <Reveal>
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 border-b border-border pb-6 mb-12">
+              <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
+                Rates & Packages
+              </h2>
+              <p className="font-mono text-[11px] text-muted-foreground">
+                Hourly: <span className="text-foreground font-bold">{HOURLY}</span> · Fixed quotes
+                available
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {packages.map((pkg, i) => (
+              <Reveal key={pkg.name} delay={i * 120}>
+                <div
+                  className={`flex h-full flex-col rounded-3xl border p-7 sm:p-8 transition-all duration-300 hover:-translate-y-1 ${
+                    pkg.featured
+                      ? "border-accent/40 bg-accent/5 shadow-[0_30px_80px_-50px_var(--accent)]"
+                      : "border-white/10 bg-white/5 hover:border-accent/30"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3 mb-6">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                      {pkg.name}
+                    </span>
+                    {pkg.featured && (
+                      <span className="rounded-full bg-accent px-3 py-1 font-mono text-[9px] uppercase tracking-widest text-accent-foreground">
+                        Popular
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-4xl sm:text-5xl font-extrabold tracking-tighter">{pkg.price}</p>
+                  <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                    {pkg.note}
+                  </p>
+                  <p className="mt-1 font-mono text-[11px] text-accent">Delivery {pkg.time}</p>
+                  <ul className="mt-7 space-y-3 text-sm text-muted-foreground">
+                    {pkg.items.map((item) => (
+                      <li key={item} className="flex gap-3">
+                        <span className="text-accent">✦</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href={WHATSAPP}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`mt-8 block rounded-full px-6 py-4 text-center font-mono text-[11px] uppercase tracking-widest transition-all ${
+                      pkg.featured
+                        ? "bg-accent text-accent-foreground hover:shadow-[0_0_35px_-6px_var(--accent)]"
+                        : "border border-white/20 hover:border-accent hover:text-accent"
+                    }`}
+                  >
+                    Get a quote
+                  </a>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal>
+            <p className="mt-8 max-w-2xl font-mono text-[11px] leading-relaxed text-muted-foreground">
+              All prices are starting points and depend on scope. 50% upfront, 50% on delivery.
+              Ongoing maintenance and retainers quoted separately.
+            </p>
+          </Reveal>
+        </section>
+
+
         <section id="contact" className="max-w-7xl mx-auto px-6">
           <Reveal>
             <div className="relative overflow-hidden bg-white/5 rounded-[40px] p-10 sm:p-12 lg:p-20 border border-white/5">
