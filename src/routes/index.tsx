@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import logo from "@/assets/ep-studio-logo.png";
-import portrait from "@/assets/esor-portrait.jpg.asset.json";
+import portrait from "@/assets/esor-portrait.jpg";
 
 import oppora from "@/assets/work/oppora.jpg";
 import bridgeview from "@/assets/work/bridgeview.jpg";
@@ -18,7 +18,7 @@ import fundora from "@/assets/work/fundora.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     links: [
-      { rel: "preload", as: "image", href: portrait.url, fetchpriority: "high" },
+      { rel: "preload", as: "image", href: portrait, fetchPriority: "high" },
     ],
     meta: [
       { title: "EP Studio — Web Design & Frontend Development" },
@@ -394,7 +394,7 @@ function Index() {
           <div className="lg:col-span-5 relative animate-fade-up [animation-delay:300ms] group">
             <div className="absolute -inset-20 bg-accent/20 blur-[100px] rounded-full z-0 animate-glow" />
             <img
-              src={portrait.url}
+              src={portrait}
               alt="Esor Ezekiel, founder of EP Studio, standing in front of a large glowing sun"
               width={1080}
               height={1350}
