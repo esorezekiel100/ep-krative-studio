@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import logo from "@/assets/ep-studio-logo.png";
 import portrait from "@/assets/esor-portrait.jpg";
@@ -324,6 +324,12 @@ function Index() {
             </span>
           </a>
           <div className="flex items-center gap-6 sm:gap-8 text-[10px] font-mono uppercase tracking-widest">
+            <Link
+              to="/services"
+              className="relative hidden sm:inline-block hover:text-accent transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-accent after:transition-all after:duration-300 hover:after:w-full"
+            >
+              Services
+            </Link>
             {[
               ["Work", "#work"],
               ["About", "#about"],
@@ -783,6 +789,9 @@ function Index() {
           © {new Date().getFullYear()} EP Studio — Esor Ezekiel
         </span>
         <div className="flex flex-wrap justify-center gap-6 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          <Link to="/services" className="hover:text-accent">
+            Services
+          </Link>
           <a href={WHATSAPP} target="_blank" rel="noreferrer" className="hover:text-accent">
             WhatsApp
           </a>
