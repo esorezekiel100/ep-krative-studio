@@ -18,7 +18,7 @@ import fundora from "@/assets/work/fundora.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     links: [
-      { rel: "preload", as: "image", href: portrait, fetchpriority: "high" },
+      { rel: "preload", as: "image", href: portrait, fetchPriority: "high" },
     ],
     meta: [
       { title: "EP Studio — Web Design & Frontend Development" },
