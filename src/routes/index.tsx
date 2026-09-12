@@ -615,30 +615,42 @@ function Index() {
           <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-12">
             Testimonials
           </h2>
-          <div className="grid md:grid-cols-2 gap-12">
-            <blockquote className="space-y-6">
-              <p className="text-xl leading-snug text-pretty">
-                "Placeholder — a short line of client feedback goes here once the first testimonial
-                comes in."
-              </p>
-              <cite className="block not-italic">
-                <span className="block text-sm font-bold">Client name</span>
-                <span className="block text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
-                  Role, Company
-                </span>
-              </cite>
-            </blockquote>
-            <blockquote className="space-y-6">
-              <p className="text-xl leading-snug text-pretty">
-                "Placeholder — peer or collaborator feedback about working together on a build."
-              </p>
-              <cite className="block not-italic">
-                <span className="block text-sm font-bold">Peer name</span>
-                <span className="block text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
-                  Role, Company
-                </span>
-              </cite>
-            </blockquote>
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              {
+                quote:
+                  "EP Studio understood our vision and turned it into a polished digital experience. The attention to detail, communication and final delivery were excellent.",
+                name: "Shola Anthony",
+                role: "Cyberagris",
+              },
+              {
+                quote:
+                  "Working with EP Studio was smooth from start to finish. The website feels modern, works beautifully on every screen and presents the brand with confidence.",
+                name: "Celestine Junnior",
+                role: "Client",
+              },
+              {
+                quote:
+                  "Esor brings creativity and technical skill together in a way that makes the entire process easy. The result was professional, fast and better than expected.",
+                name: "Clement Faith",
+                role: "Client",
+              },
+            ].map((testimonial) => (
+              <blockquote
+                key={testimonial.name}
+                className="flex h-full flex-col justify-between gap-8 border-t border-border pt-6"
+              >
+                <p className="text-lg leading-relaxed text-pretty">
+                  “{testimonial.quote}”
+                </p>
+                <cite className="block not-italic">
+                  <span className="block text-sm font-bold">{testimonial.name}</span>
+                  <span className="mt-1 block font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {testimonial.role}
+                  </span>
+                </cite>
+              </blockquote>
+            ))}
           </div>
         </section>
 
