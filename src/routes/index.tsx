@@ -611,47 +611,95 @@ function Index() {
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-6 mb-32">
-          <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-12">
-            Testimonials
-          </h2>
-          <div className="grid gap-6 md:grid-cols-3">
+        <section className="relative max-w-7xl mx-auto px-6 mb-32" aria-labelledby="testimonials-heading">
+          <Reveal>
+            <div className="mb-12 grid gap-8 border-b border-border pb-9 md:grid-cols-[1fr_auto] md:items-end">
+              <div>
+                <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-accent">
+                  EP Studio / Testimonials
+                </p>
+                <h2 id="testimonials-heading" className="text-4xl font-semibold tracking-tight sm:text-5xl">
+                  Voices of <span className="font-editorial italic font-medium text-accent">impact.</span>
+                </h2>
+              </div>
+              <p className="max-w-sm text-sm leading-relaxed text-muted-foreground md:text-right">
+                Real words from people who trusted EP Studio to bring their ideas to life.
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="grid gap-5 md:grid-cols-3">
             {[
               {
                 quote:
                   "EP Studio understood our vision and turned it into a polished digital experience. The attention to detail, communication and final delivery were excellent.",
                 name: "Shola Anthony",
                 role: "Cyberagris",
+                initials: "SA",
               },
               {
                 quote:
                   "Working with EP Studio was smooth from start to finish. The website feels modern, works beautifully on every screen and presents the brand with confidence.",
                 name: "Celestine Junnior",
                 role: "Client",
+                initials: "CJ",
               },
               {
                 quote:
                   "Esor brings creativity and technical skill together in a way that makes the entire process easy. The result was professional, fast and better than expected.",
                 name: "Clement Faith",
                 role: "Client",
+                initials: "CF",
               },
-            ].map((testimonial) => (
-              <blockquote
-                key={testimonial.name}
-                className="flex h-full flex-col justify-between gap-8 border-t border-border pt-6"
-              >
-                <p className="text-lg leading-relaxed text-pretty">
-                  “{testimonial.quote}”
-                </p>
-                <cite className="block not-italic">
-                  <span className="block text-sm font-bold">{testimonial.name}</span>
-                  <span className="mt-1 block font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {testimonial.role}
-                  </span>
-                </cite>
-              </blockquote>
+            ].map((testimonial, i) => (
+              <Reveal key={testimonial.name} delay={i * 130}>
+                <blockquote className="testimonial-card group relative flex min-h-[360px] h-full overflow-hidden rounded-lg border border-border bg-card/55 p-7 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-accent/45 hover:shadow-[0_30px_70px_-42px_var(--accent)] sm:p-8">
+                  <span className="testimonial-sweep pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-accent/5 blur-xl" aria-hidden="true" />
+                  <div className="relative flex w-full flex-col justify-between gap-10">
+                    <div>
+                      <div className="mb-8 flex items-start justify-between">
+                        <span className="font-editorial text-7xl italic leading-none text-accent/30 transition-colors duration-500 group-hover:text-accent/60" aria-hidden="true">
+                          “
+                        </span>
+                        <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
+                          0{i + 1}
+                        </span>
+                      </div>
+                      <p className="font-editorial text-xl italic leading-relaxed text-foreground/90 text-pretty sm:text-[1.35rem]">
+                        {testimonial.quote}
+                      </p>
+                    </div>
+                    <footer className="flex items-center gap-4 border-t border-border pt-6">
+                      <span className="grid size-11 shrink-0 place-items-center rounded-full border border-accent/35 bg-accent/10 font-mono text-[11px] font-bold text-accent" aria-hidden="true">
+                        {testimonial.initials}
+                      </span>
+                      <cite className="block min-w-0 not-italic">
+                        <span className="block text-sm font-semibold uppercase tracking-wider">{testimonial.name}</span>
+                        <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
+                          {testimonial.role}
+                        </span>
+                      </cite>
+                    </footer>
+                  </div>
+                </blockquote>
+              </Reveal>
             ))}
           </div>
+
+          <Reveal delay={260}>
+            <div className="mt-8 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex -space-x-2" aria-hidden="true">
+                {["SA", "CJ", "CF"].map((initials) => (
+                  <span key={initials} className="grid size-9 place-items-center rounded-full border-2 border-background bg-secondary font-mono text-[9px] font-bold text-accent">
+                    {initials}
+                  </span>
+                ))}
+              </div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                Three client voices <span className="mx-2 text-accent">✦</span> One standard of excellence
+              </p>
+            </div>
+          </Reveal>
         </section>
 
         <section id="rates" className="max-w-7xl mx-auto px-6 mb-32">
