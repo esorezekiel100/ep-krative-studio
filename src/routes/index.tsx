@@ -220,13 +220,25 @@ const packages = [
 const HOURLY = "$25/hour";
 
 
-function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+function Reveal({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: ReactNode;
+  delay?: number;
+  className?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setShown(true);
+      return;
+    }
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
@@ -243,10 +255,10 @@ function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }
   return (
     <div
       ref={ref}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-[900ms] ease-out-expo ${
-        shown ? "opacity-100 translate-y-0 blur-0" : "opacity-0 translate-y-10 blur-[6px]"
-      }`}
+      style={{ transitionDelay: `${Math.min(delay, 240)}ms` }}
+      className={`transition-[opacity,transform] duration-500 ease-out-expo motion-reduce:transition-none ${
+        shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+      } ${className}`}
     >
       {children}
     </div>
@@ -295,13 +307,13 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-background overflow-x-hidden">
-      <div className="pointer-events-none fixed inset-0 -z-10 opacity-70">
-        <div className="absolute -top-40 -left-32 size-[42rem] rounded-full bg-accent/15 blur-[140px] animate-drift" />
-        <div className="absolute top-1/2 -right-40 size-[38rem] rounded-full bg-accent/10 blur-[150px] animate-drift [animation-delay:-6s]" />
+      <div className="pointer-events-none fixed inset-0 -z-10 opacity-70 hidden md:block">
+        <div className="absolute -top-40 -left-32 size-[42rem] rounded-full bg-accent/10 blur-[140px]" />
+        <div className="absolute top-1/2 -right-40 size-[38rem] rounded-full bg-accent/[0.07] blur-[150px]" />
       </div>
 
       <nav
-        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
+        className={`fixed top-0 w-full z-50 transition-[background-color,border-color,padding] duration-200 ${
           scrolled
             ? "border-b border-border bg-background/70 backdrop-blur-xl py-2"
             : "border-b border-transparent py-4"
@@ -357,48 +369,43 @@ function Index() {
       </nav>
 
       <main id="top" className="pt-32 pb-24">
-        <section className="max-w-7xl mx-auto px-6 mb-24 grid lg:grid-cols-12 gap-12 items-end">
+        <section className="hero-enter max-w-7xl mx-auto px-6 mb-24 grid lg:grid-cols-12 gap-12 items-end">
           <div className="lg:col-span-7">
-            <div className="animate-fade-up flex items-center gap-3 mb-8">
-              <span className="relative flex size-2">
-                <span className="absolute inline-flex size-full rounded-full bg-accent opacity-75 animate-ping" />
-                <span className="relative inline-flex size-2 rounded-full bg-accent" />
-              </span>
+            <div className="flex items-center gap-3 mb-8">
+              <span className="relative inline-flex size-2 rounded-full bg-accent" />
               <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                 Available for new projects
               </span>
             </div>
             <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-balance mb-8">
-              <span className="block animate-fade-up">We build</span>
-              <span className="block animate-fade-up [animation-delay:120ms] bg-[linear-gradient(100deg,var(--accent),oklch(0.9_0.16_85),var(--accent))] bg-[length:220%_auto] bg-clip-text text-transparent animate-shimmer">
-                web experiences
-              </span>
-              <span className="block animate-fade-up [animation-delay:240ms]">that convert.</span>
+              <span className="block">We build</span>
+              <span className="block text-accent">web experiences</span>
+              <span className="block">that convert.</span>
             </h1>
-            <p className="max-w-[42ch] text-lg text-muted-foreground mb-10 animate-fade-up [animation-delay:320ms]">
+            <p className="max-w-[42ch] text-lg text-muted-foreground mb-10">
               EP Studio is the design and frontend practice of Esor Ezekiel — fast, responsive,
               pixel-perfect websites for businesses that want to look serious online.
             </p>
-            <div className="flex flex-wrap gap-4 animate-fade-up [animation-delay:400ms]">
-              <a
-                href="#work"
-                className="group inline-flex items-center gap-3 bg-foreground text-background px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest hover:bg-accent transition-all duration-300"
-              >
-                View Our Work
-                <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-              </a>
+            <div className="flex flex-wrap items-center gap-4">
               <a
                 href={WHATSAPP}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-3 border border-white/20 px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest hover:border-accent hover:text-accent transition-colors"
+                className="group inline-flex items-center gap-3 bg-accent text-accent-foreground px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest font-medium shadow-[0_10px_40px_-10px_var(--accent)] hover:-translate-y-0.5 transition-transform duration-200"
               >
-                Hire EP Studio
+                Start your project
+                <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+              </a>
+              <a
+                href="#work"
+                className="inline-flex items-center gap-2 px-2 py-4 font-mono text-xs uppercase tracking-widest text-muted-foreground underline underline-offset-8 decoration-border hover:text-foreground hover:decoration-accent transition-colors duration-200"
+              >
+                View our work
               </a>
             </div>
           </div>
-          <div className="lg:col-span-5 relative animate-fade-up [animation-delay:300ms] group">
-            <div className="absolute -inset-20 bg-accent/20 blur-[100px] rounded-full z-0 animate-glow" />
+          <div className="lg:col-span-5 relative">
+            <div className="absolute -inset-12 bg-accent/15 blur-[90px] rounded-full z-0" aria-hidden="true" />
             <img
               src={portrait}
               alt="Esor Ezekiel, founder of EP Studio, standing in front of a large glowing sun"
@@ -406,7 +413,7 @@ function Index() {
               height={1350}
               fetchPriority="high"
               decoding="async"
-              className="relative z-10 w-full aspect-[4/5] object-cover rounded-2xl outline-1 -outline-offset-1 outline-white/10 transition-transform duration-700 group-hover:scale-[1.02]"
+              className="relative z-10 w-full aspect-[4/5] object-cover rounded-2xl outline-1 -outline-offset-1 outline-white/10"
             />
             <img
               src={logo}
@@ -414,7 +421,7 @@ function Index() {
               aria-hidden="true"
               width={96}
               height={96}
-              className="absolute z-20 -bottom-6 -left-6 size-20 rounded-2xl bg-background/80 backdrop-blur p-3 ring-1 ring-white/10 animate-float"
+              className="absolute z-20 -bottom-6 -left-6 size-20 rounded-2xl bg-background/80 backdrop-blur p-3 ring-1 ring-white/10"
             />
           </div>
         </section>
@@ -423,6 +430,7 @@ function Index() {
 
 
         <section id="about" className="max-w-7xl mx-auto px-6 mb-32">
+          <Reveal>
           <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4">
               <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent">About</h2>
@@ -440,9 +448,11 @@ function Index() {
               </p>
             </div>
           </div>
+          </Reveal>
         </section>
 
         <section id="work" className="max-w-7xl mx-auto px-6 mb-32">
+          <Reveal>
           <div className="flex justify-between items-end border-b border-border pb-6 mb-16">
             <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
               Selected Client Work
@@ -451,11 +461,12 @@ function Index() {
               ({featured.length + gridProjects.length + earlier.length} Projects)
             </span>
           </div>
+          </Reveal>
 
           <div className="space-y-24">
             {featured.map((p, i) => (
+              <Reveal key={p.name}>
               <article
-                key={p.name}
                 className="group grid lg:grid-cols-12 gap-8 lg:gap-12 items-center"
               >
                 <a
@@ -472,7 +483,7 @@ function Index() {
                     loading="lazy"
                     width={1280}
                     height={800}
-                    className="w-full aspect-[16/10] object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
+                    className="w-full aspect-[16/10] object-cover object-top transition-transform duration-200 ease-out-expo group-hover:duration-300 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                   />
                 </a>
                 <div className="lg:col-span-5">
@@ -510,15 +521,16 @@ function Index() {
                   </div>
                 </div>
               </article>
+              </Reveal>
             ))}
           </div>
         </section>
 
         <section className="max-w-7xl mx-auto px-6 mb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {gridProjects.map((p) => (
+          {gridProjects.map((p, i) => (
+            <Reveal key={p.name} delay={(i % 3) * 60}>
             <article
-              key={p.name}
-              className="bg-white/5 p-5 rounded-2xl border border-white/5 hover:border-accent/30 transition-all group"
+              className="h-full bg-white/5 p-5 rounded-2xl border border-white/5 hover:border-accent/30 hover:-translate-y-1 transition-[transform,border-color] duration-200 group"
             >
               <a href={p.live} target="_blank" rel="noreferrer" className="block">
                 <img
@@ -558,13 +570,16 @@ function Index() {
                 </a>
               </div>
             </article>
+            </Reveal>
           ))}
         </section>
 
         <section className="max-w-7xl mx-auto px-6 mb-32">
-          <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-8">
-            More Builds
-          </h2>
+          <Reveal>
+            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-8">
+              More Builds
+            </h2>
+          </Reveal>
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8">
             {earlier.map((p) => (
               <li key={p.name} className="border-b border-border">
@@ -589,7 +604,7 @@ function Index() {
 
         <section className="max-w-7xl mx-auto px-6 mb-32 py-24 border-y border-border">
           <div className="grid lg:grid-cols-12 gap-12">
-            <div className="lg:col-span-4">
+            <Reveal className="lg:col-span-4">
               <h2 className="text-4xl font-bold tracking-tight mb-4">
                 Technical <br />
                 <span className="text-accent">Skillset</span>
@@ -597,15 +612,15 @@ function Index() {
               <p className="text-muted-foreground">
                 Built on a foundation of precision and performance optimization.
               </p>
-            </div>
+            </Reveal>
             <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-6">
-              {skills.map(([label, value]) => (
-                <div key={value} className="space-y-2">
+              {skills.map(([label, value], i) => (
+                <Reveal key={value} delay={Math.min(i * 40, 240)} className="space-y-2">
                   <span className="block text-xs font-mono text-muted-foreground uppercase tracking-widest">
                     {label}
                   </span>
                   <p className="font-bold">{value}</p>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -652,7 +667,7 @@ function Index() {
                 initials: "CF",
               },
             ].map((testimonial, i) => (
-              <Reveal key={testimonial.name} delay={i * 130}>
+              <Reveal key={testimonial.name} delay={i * 60}>
                 <blockquote className="testimonial-card group relative flex min-h-[360px] h-full overflow-hidden rounded-lg border border-border bg-card/55 p-7 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-accent/45 hover:shadow-[0_30px_70px_-42px_var(--accent)] sm:p-8">
                   <span className="testimonial-sweep pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-accent/5 blur-xl" aria-hidden="true" />
                   <div className="relative flex w-full flex-col justify-between gap-10">
