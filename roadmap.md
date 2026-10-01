@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] Contact form -> real inbox (needs email domain)
-- [ ] Hero: single smooth entrance + clear CTA
-- [ ] Homepage motion hierarchy (About, Skills, Projects, Testimonials)
-- [ ] Private client portal (Cyberagris, Celestine, Clement) linked from portfolio
+- [ ] Contact form -> real inbox — blocked: user must set up email domain they own
+- [x] Hero: single smooth entrance + clear CTA
+- [x] Homepage motion hierarchy (About, Skills, Projects, Testimonials)
+- [ ] Private client portal — blocked: awaiting user's answers (login method, features)
