@@ -216,7 +216,7 @@ function AdminAddProject({ onDone }: { onDone: () => void }) {
     const fd = new FormData(form);
     const parsed = projectSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return setMsg("Check the fields: " + (parsed.error.issues[0]?.path.join(".") ?? ""));
-    const { error } = await supabase.from("client_projects").insert({ ...parsed.data, live_url: parsed.data.live_url || null });
+    const { error } = await supabase.from("client_projects").insert({ ...parsed.data, summary: parsed.data.summary || null, live_url: parsed.data.live_url || null });
     if (error) return setMsg(error.message);
     form.reset();
     setMsg("Project added. The client sees it after signing in with that email.");
