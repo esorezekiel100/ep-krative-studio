@@ -356,6 +356,12 @@ function Index() {
                 {label}
               </a>
             ))}
+            <Link
+              to="/portal"
+              className="hover:text-accent transition-colors"
+            >
+              Client login
+            </Link>
             <a
               href={WHATSAPP}
               target="_blank"
