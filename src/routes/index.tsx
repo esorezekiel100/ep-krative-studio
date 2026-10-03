@@ -467,7 +467,7 @@ function Index() {
                 Available for new projects
               </span>
             </div>
-            <h1 className="mb-8 text-6xl font-extrabold uppercase leading-[0.82] sm:text-7xl md:text-8xl">
+            <h1 className="mb-8 text-5xl font-extrabold uppercase leading-[0.84] sm:text-7xl md:text-8xl">
               <span className="block">We build</span>
               <span className="block text-signal">web experiences</span>
               <span className="block">that convert.</span>

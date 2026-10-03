@@ -225,6 +225,12 @@
   }
 }
 
+@media (max-width: 767px) {
+  .animate-marquee {
+    animation-duration: 40s;
+  }
+}
+
 
 
 .dark {
