@@ -19,7 +19,7 @@
  */
 
 @theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --font-editorial: "Playfair Display", Georgia, serif;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -46,6 +46,8 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-signal: var(--signal);
+  --color-signal-foreground: var(--signal-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
@@ -68,25 +70,27 @@
 }
 
 :root {
-  --radius: 1rem;
-  --background: oklch(0.16 0.008 60);
-  --foreground: oklch(0.96 0.004 80);
-  --card: oklch(0.21 0.01 60);
-  --card-foreground: oklch(0.96 0.004 80);
-  --popover: oklch(0.21 0.01 60);
-  --popover-foreground: oklch(0.96 0.004 80);
-  --primary: oklch(0.74 0.175 55);
-  --primary-foreground: oklch(0.16 0.008 60);
-  --secondary: oklch(0.26 0.012 60);
-  --secondary-foreground: oklch(0.96 0.004 80);
-  --muted: oklch(0.26 0.012 60);
-  --muted-foreground: oklch(0.68 0.014 70);
-  --accent: oklch(0.74 0.175 55);
-  --accent-foreground: oklch(0.16 0.008 60);
+  --radius: 0.5rem;
+  --background: oklch(0.105 0.004 255);
+  --foreground: oklch(0.965 0.006 85);
+  --card: oklch(0.145 0.008 255);
+  --card-foreground: oklch(0.965 0.006 85);
+  --popover: oklch(0.145 0.008 255);
+  --popover-foreground: oklch(0.965 0.006 85);
+  --primary: oklch(0.73 0.18 53);
+  --primary-foreground: oklch(0.105 0.004 255);
+  --secondary: oklch(0.19 0.01 255);
+  --secondary-foreground: oklch(0.965 0.006 85);
+  --muted: oklch(0.19 0.01 255);
+  --muted-foreground: oklch(0.69 0.014 255);
+  --accent: oklch(0.73 0.18 53);
+  --accent-foreground: oklch(0.105 0.004 255);
+  --signal: oklch(0.67 0.16 240);
+  --signal-foreground: oklch(0.985 0.003 240);
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.96 0.004 80 / 12%);
-  --input: oklch(0.96 0.004 80 / 15%);
+  --border: oklch(0.965 0.006 85 / 12%);
+  --input: oklch(0.965 0.006 85 / 16%);
   --ring: oklch(0.74 0.175 55);
   --chart-1: oklch(0.74 0.175 55);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -174,7 +178,7 @@
 }
 
 .animate-marquee {
-  animation: marquee 28s linear infinite;
+  animation: marquee 36s linear infinite;
 }
 .animate-float {
   animation: float 5s ease-in-out infinite;
@@ -190,7 +194,22 @@
 }
 
 .testimonial-card:hover .testimonial-sweep {
-  animation: testimonial-sweep 1.15s var(--ease-out-expo) both;
+  animation: testimonial-sweep 650ms var(--ease-out-expo) both;
+}
+
+.kinetic-rule {
+  background: linear-gradient(90deg, var(--signal), transparent);
+}
+
+.carousel-progress {
+  transform-origin: left;
+  transition: transform 420ms var(--ease-out-expo);
+}
+
+@media (hover: hover) {
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -199,8 +218,16 @@
   .animate-glow,
   .animate-drift,
   .animate-shimmer,
-  .testimonial-card:hover .testimonial-sweep {
+  .testimonial-card:hover .testimonial-sweep,
+  .carousel-progress {
     animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .animate-marquee {
+    animation-duration: 40s;
   }
 }
 

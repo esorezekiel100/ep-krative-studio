@@ -1,5 +1,8 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import logo from "@/assets/ep-studio-logo.png";
 import portrait from "@/assets/esor-portrait.jpg";
 
@@ -296,6 +299,92 @@ function Marquee() {
   );
 }
 
+function ProjectCarousel() {
+  const [viewportRef, embla] = useEmblaCarousel({ align: "start", loop: true });
+  const [selected, setSelected] = useState(0);
+
+  const syncSelected = useCallback(() => {
+    if (embla) setSelected(embla.selectedScrollSnap());
+  }, [embla]);
+
+  useEffect(() => {
+    if (!embla) return;
+    syncSelected();
+    embla.on("select", syncSelected);
+    embla.on("reInit", syncSelected);
+    return () => {
+      embla.off("select", syncSelected);
+      embla.off("reInit", syncSelected);
+    };
+  }, [embla, syncSelected]);
+
+  return (
+    <div>
+      <div ref={viewportRef} className="overflow-hidden">
+        <div className="flex touch-pan-y gap-4 sm:gap-6">
+          {featured.map((project, index) => (
+            <article
+              key={project.name}
+              className="group min-w-0 flex-[0_0_88%] sm:flex-[0_0_72%] lg:flex-[0_0_62%]"
+            >
+              <a
+                href={project.live}
+                target="_blank"
+                rel="noreferrer"
+                className="relative block aspect-[4/3] overflow-hidden border border-border bg-card"
+              >
+                <img
+                  src={project.img}
+                  alt={`Screenshot of the ${project.name} website built by Esor Ezekiel`}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  width={1280}
+                  height={800}
+                  className="h-full w-full object-cover object-top transition-[transform,filter] duration-500 ease-out-expo group-hover:scale-[1.025] group-hover:saturate-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                />
+                <span className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
+                <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-8">
+                  <span>
+                    <span className="mb-2 block font-mono text-[9px] uppercase tracking-[0.25em] text-signal">
+                      {project.tech.join(" / ")}
+                    </span>
+                    <span className="block text-2xl font-extrabold uppercase sm:text-4xl">{project.name}</span>
+                  </span>
+                  <span className="grid size-10 shrink-0 place-items-center border border-foreground/30 bg-background/50 backdrop-blur transition-colors group-hover:border-signal group-hover:text-signal">
+                    <ArrowRight aria-hidden="true" />
+                  </span>
+                </span>
+              </a>
+              <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
+                <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">{project.desc}</p>
+                <a href={project.code} target="_blank" rel="noreferrer" className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-signal">
+                  View code
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-8 flex items-center gap-5">
+        <div className="h-px flex-1 overflow-hidden bg-border" aria-hidden="true">
+          <span className="carousel-progress block h-full w-full bg-signal" style={{ transform: `scaleX(${(selected + 1) / featured.length})` }} />
+        </div>
+        <span className="min-w-14 font-mono text-[10px] text-signal" aria-live="polite">
+          {String(selected + 1).padStart(2, "0")} / {String(featured.length).padStart(2, "0")}
+        </span>
+        <div className="flex gap-2">
+          <Button variant="outline" size="icon" onClick={() => embla?.scrollPrev()} aria-label="Previous project" className="rounded-none border-border bg-transparent hover:border-signal hover:bg-signal hover:text-signal-foreground">
+            <ArrowLeft aria-hidden="true" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={() => embla?.scrollNext()} aria-label="Next project" className="rounded-none border-border bg-transparent hover:border-signal hover:bg-signal hover:text-signal-foreground">
+            <ArrowRight aria-hidden="true" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Index() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -306,11 +395,7 @@ function Index() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-background overflow-x-hidden">
-      <div className="pointer-events-none fixed inset-0 -z-10 opacity-70 hidden md:block">
-        <div className="absolute -top-40 -left-32 size-[42rem] rounded-full bg-accent/10 blur-[140px]" />
-        <div className="absolute top-1/2 -right-40 size-[38rem] rounded-full bg-accent/[0.07] blur-[150px]" />
-      </div>
+    <div className="min-h-screen overflow-x-hidden bg-background font-sans text-foreground selection:bg-signal selection:text-signal-foreground">
 
       <nav
         className={`fixed top-0 w-full z-50 transition-[background-color,border-color,padding] duration-200 ${
@@ -321,8 +406,7 @@ function Index() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
           <a href="#top" className="group flex items-center gap-3">
-            <span className="relative grid place-items-center size-10 rounded-xl bg-accent/10 ring-1 ring-accent/25 transition-transform duration-500 group-hover:rotate-[-8deg] group-hover:scale-105">
-              <span className="absolute inset-0 rounded-xl bg-accent/25 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <span className="relative grid size-10 place-items-center border border-border bg-card transition-colors duration-200 group-hover:border-accent">
               <img
                 src={logo}
                 alt="EP Studio logo"
@@ -366,7 +450,7 @@ function Index() {
               href={WHATSAPP}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full bg-accent px-4 py-2 text-accent-foreground font-bold hover:shadow-[0_0_30px_-4px_var(--accent)] transition-shadow"
+              className="bg-accent px-4 py-2 text-accent-foreground font-bold transition-colors hover:bg-signal hover:text-signal-foreground"
             >
               WhatsApp
             </a>
@@ -375,7 +459,7 @@ function Index() {
       </nav>
 
       <main id="top" className="pt-32 pb-24">
-        <section className="hero-enter max-w-7xl mx-auto px-6 mb-24 grid lg:grid-cols-12 gap-12 items-end">
+        <section className="hero-enter mx-auto mb-24 grid max-w-7xl gap-12 px-6 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <div className="flex items-center gap-3 mb-8">
               <span className="relative inline-flex size-2 rounded-full bg-accent" />
@@ -383,9 +467,9 @@ function Index() {
                 Available for new projects
               </span>
             </div>
-            <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-balance mb-8">
+            <h1 className="mb-8 text-5xl font-extrabold uppercase leading-[0.84] sm:text-7xl md:text-8xl">
               <span className="block">We build</span>
-              <span className="block text-accent">web experiences</span>
+              <span className="block text-signal">web experiences</span>
               <span className="block">that convert.</span>
             </h1>
             <p className="max-w-[42ch] text-lg text-muted-foreground mb-10">
@@ -397,7 +481,7 @@ function Index() {
                 href={WHATSAPP}
                 target="_blank"
                 rel="noreferrer"
-                className="group inline-flex items-center gap-3 bg-accent text-accent-foreground px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest font-medium shadow-[0_10px_40px_-10px_var(--accent)] hover:-translate-y-0.5 transition-transform duration-200"
+                className="group inline-flex items-center gap-3 bg-accent px-8 py-4 font-mono text-xs font-medium uppercase tracking-widest text-accent-foreground transition-colors duration-200 hover:bg-signal hover:text-signal-foreground"
               >
                 Start your project
                 <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
@@ -411,7 +495,6 @@ function Index() {
             </div>
           </div>
           <div className="lg:col-span-5 relative">
-            <div className="absolute -inset-12 bg-accent/15 blur-[90px] rounded-full z-0" aria-hidden="true" />
             <img
               src={portrait}
               alt="Esor Ezekiel, founder of EP Studio, standing in front of a large glowing sun"
@@ -419,7 +502,7 @@ function Index() {
               height={1350}
               fetchPriority="high"
               decoding="async"
-              className="relative z-10 w-full aspect-[4/5] object-cover rounded-2xl outline-1 -outline-offset-1 outline-white/10"
+              className="relative z-10 aspect-[4/5] w-full border border-border object-cover saturate-[0.9]"
             />
             <img
               src={logo}
@@ -427,7 +510,7 @@ function Index() {
               aria-hidden="true"
               width={96}
               height={96}
-              className="absolute z-20 -bottom-6 -left-6 size-20 rounded-2xl bg-background/80 backdrop-blur p-3 ring-1 ring-white/10"
+              className="absolute z-20 -bottom-5 -left-5 size-20 border border-border bg-background/90 p-3 backdrop-blur"
             />
           </div>
         </section>
@@ -469,67 +552,7 @@ function Index() {
           </div>
           </Reveal>
 
-          <div className="space-y-24">
-            {featured.map((p, i) => (
-              <Reveal key={p.name}>
-              <article
-                className="group grid lg:grid-cols-12 gap-8 lg:gap-12 items-center"
-              >
-                <a
-                  href={p.live}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`lg:col-span-7 block overflow-hidden rounded-2xl border border-white/10 ${
-                    i % 2 === 1 ? "lg:order-2" : ""
-                  }`}
-                >
-                  <img
-                    src={p.img}
-                    alt={`Screenshot of the ${p.name} website built by Esor Ezekiel`}
-                    loading="lazy"
-                    width={1280}
-                    height={800}
-                    className="w-full aspect-[16/10] object-cover object-top transition-transform duration-200 ease-out-expo group-hover:duration-300 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                  />
-                </a>
-                <div className="lg:col-span-5">
-                  <span className="font-mono text-[10px] text-muted-foreground">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="text-3xl sm:text-4xl font-bold tracking-tight mt-2 mb-3 group-hover:text-accent transition-colors">
-                    {p.name}
-                  </h3>
-                  <p className="text-muted-foreground max-w-md">{p.desc}</p>
-                  <div className="flex flex-wrap gap-3 mt-5">
-                    {p.tech.map((t) => (
-                      <span key={t} className="text-[10px] font-mono px-2 py-1 bg-white/5 rounded">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex gap-6 font-mono text-[10px] uppercase tracking-widest mt-8">
-                    <a
-                      href={p.live}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline underline-offset-4 decoration-accent hover:text-accent"
-                    >
-                      Live Demo
-                    </a>
-                    <a
-                      href={p.code}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline underline-offset-4 decoration-white/20 hover:decoration-accent"
-                    >
-                      View Code
-                    </a>
-                  </div>
-                </div>
-              </article>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal><ProjectCarousel /></Reveal>
         </section>
 
         <section className="max-w-7xl mx-auto px-6 mb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
