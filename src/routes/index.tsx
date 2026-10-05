@@ -302,6 +302,7 @@ function Marquee() {
 function ProjectCarousel() {
   const [viewportRef, embla] = useEmblaCarousel({ align: "start", loop: true });
   const [selected, setSelected] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   const syncSelected = useCallback(() => {
     if (embla) setSelected(embla.selectedScrollSnap());
@@ -318,13 +319,46 @@ function ProjectCarousel() {
     };
   }, [embla, syncSelected]);
 
+  useEffect(() => {
+    if (!embla || paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => embla.scrollNext(), 5500);
+    return () => window.clearInterval(timer);
+  }, [embla, paused]);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      embla?.scrollPrev();
+    }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      embla?.scrollNext();
+    }
+  };
+
   return (
-    <div>
+    <div
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Featured client projects"
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
+      }}
+      className="outline-none focus-visible:ring-2 focus-visible:ring-signal focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+    >
       <div ref={viewportRef} className="overflow-hidden">
         <div className="flex touch-pan-y gap-4 sm:gap-6">
           {featured.map((project, index) => (
             <article
               key={project.name}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${index + 1} of ${featured.length}: ${project.name}`}
               className="group min-w-0 flex-[0_0_88%] sm:flex-[0_0_72%] lg:flex-[0_0_62%]"
             >
               <a
@@ -365,18 +399,33 @@ function ProjectCarousel() {
         </div>
       </div>
 
-      <div className="mt-8 flex items-center gap-5">
+      <div className="mt-8 flex flex-wrap items-center gap-5">
         <div className="h-px flex-1 overflow-hidden bg-border" aria-hidden="true">
           <span className="carousel-progress block h-full w-full bg-signal" style={{ transform: `scaleX(${(selected + 1) / featured.length})` }} />
         </div>
         <span className="min-w-14 font-mono text-[10px] text-signal" aria-live="polite">
           {String(selected + 1).padStart(2, "0")} / {String(featured.length).padStart(2, "0")}
         </span>
+        <div className="flex items-center gap-1" aria-label="Choose project slide">
+          {featured.map((project, index) => (
+            <Button
+              key={project.name}
+              variant="ghost"
+              size="icon"
+              onClick={() => embla?.scrollTo(index)}
+              aria-label={`Go to slide ${index + 1}: ${project.name}`}
+              aria-current={selected === index ? "true" : undefined}
+              className="group/indicator min-h-11 min-w-11 rounded-none hover:bg-transparent"
+            >
+              <span className={`block h-1 transition-all duration-300 ${selected === index ? "w-7 bg-signal" : "w-3 bg-muted-foreground group-hover/indicator:bg-foreground"}`} />
+            </Button>
+          ))}
+        </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={() => embla?.scrollPrev()} aria-label="Previous project" className="rounded-none border-border bg-transparent hover:border-signal hover:bg-signal hover:text-signal-foreground">
+          <Button variant="outline" size="icon" onClick={() => embla?.scrollPrev()} aria-label="Previous project" className="min-h-11 min-w-11 rounded-none border-border bg-transparent hover:border-signal hover:bg-signal hover:text-signal-foreground">
             <ArrowLeft aria-hidden="true" />
           </Button>
-          <Button variant="outline" size="icon" onClick={() => embla?.scrollNext()} aria-label="Next project" className="rounded-none border-border bg-transparent hover:border-signal hover:bg-signal hover:text-signal-foreground">
+          <Button variant="outline" size="icon" onClick={() => embla?.scrollNext()} aria-label="Next project" className="min-h-11 min-w-11 rounded-none border-border bg-transparent hover:border-signal hover:bg-signal hover:text-signal-foreground">
             <ArrowRight aria-hidden="true" />
           </Button>
         </div>

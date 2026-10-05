@@ -3,4 +3,4 @@
 - [x] Hero: single smooth entrance + clear CTA
 - [x] Homepage motion hierarchy (About, Skills, Projects, Testimonials)
 - [x] Private client portal (/portal, email+password) linked from nav
-- [x] Kinetic Noir homepage redesign + featured-work carousel
+- [x] Full Kinetic Noir homepage redesign + accessible autoplay featured-work carousel
