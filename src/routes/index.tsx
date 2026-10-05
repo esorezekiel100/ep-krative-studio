@@ -608,7 +608,7 @@ function Index() {
           {gridProjects.map((p, i) => (
             <Reveal key={p.name} delay={(i % 3) * 60}>
             <article
-              className="h-full bg-white/5 p-5 rounded-2xl border border-white/5 hover:border-accent/30 hover:-translate-y-1 transition-[transform,border-color] duration-200 group"
+              className="h-full border border-border bg-card/50 p-5 transition-[transform,border-color,background-color] duration-200 group hover:-translate-y-1 hover:border-signal/50 hover:bg-card"
             >
               <a href={p.live} target="_blank" rel="noreferrer" className="block">
                 <img
@@ -617,7 +617,7 @@ function Index() {
                   loading="lazy"
                   width={1280}
                   height={800}
-                  className="w-full aspect-[16/10] mb-6 rounded-lg object-cover object-top bg-white/5"
+                  className="mb-6 aspect-[16/10] w-full border-b border-border bg-secondary object-cover object-top saturate-[0.9] transition-[filter,transform] duration-300 group-hover:scale-[1.015] group-hover:saturate-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
               </a>
               <h4 className="text-xl font-bold mb-2">{p.name}</h4>
@@ -667,7 +667,7 @@ function Index() {
                   rel="noreferrer"
                   className="flex items-baseline justify-between gap-4 py-5 group"
                 >
-                  <span className="font-bold group-hover:text-accent transition-colors">
+                  <span className="font-bold transition-colors group-hover:text-signal">
                     {p.name}
                   </span>
                   <span className="text-[11px] font-mono text-muted-foreground text-right">
@@ -683,9 +683,9 @@ function Index() {
         <section className="max-w-7xl mx-auto px-6 mb-32 py-24 border-y border-border">
           <div className="grid lg:grid-cols-12 gap-12">
             <Reveal className="lg:col-span-4">
-              <h2 className="text-4xl font-bold tracking-tight mb-4">
+              <h2 className="text-4xl font-extrabold uppercase mb-4">
                 Technical <br />
-                <span className="text-accent">Skillset</span>
+                <span className="text-signal">Skillset</span>
               </h2>
               <p className="text-muted-foreground">
                 Built on a foundation of precision and performance optimization.
@@ -711,8 +711,8 @@ function Index() {
                 <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-accent">
                   EP Studio / Testimonials
                 </p>
-                <h2 id="testimonials-heading" className="text-4xl font-semibold tracking-tight sm:text-5xl">
-                  Voices of <span className="font-editorial italic font-medium text-accent">impact.</span>
+                <h2 id="testimonials-heading" className="text-4xl font-extrabold uppercase sm:text-5xl">
+                  Voices of <span className="text-signal">impact.</span>
                 </h2>
               </div>
               <p className="max-w-sm text-sm leading-relaxed text-muted-foreground md:text-right">
@@ -746,12 +746,12 @@ function Index() {
               },
             ].map((testimonial, i) => (
               <Reveal key={testimonial.name} delay={i * 60}>
-                <blockquote className="testimonial-card group relative flex min-h-[360px] h-full overflow-hidden rounded-lg border border-border bg-card/55 p-7 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-accent/45 hover:shadow-[0_30px_70px_-42px_var(--accent)] sm:p-8">
+                <blockquote className="testimonial-card group relative flex min-h-[360px] h-full overflow-hidden border border-border bg-card/55 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-signal/50 sm:p-8">
                   <span className="testimonial-sweep pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-accent/5 blur-xl" aria-hidden="true" />
                   <div className="relative flex w-full flex-col justify-between gap-10">
                     <div>
                       <div className="mb-8 flex items-start justify-between">
-                        <span className="font-editorial text-7xl italic leading-none text-accent/30 transition-colors duration-500 group-hover:text-accent/60" aria-hidden="true">
+                        <span className="font-editorial text-7xl italic leading-none text-signal/35 transition-colors duration-300 group-hover:text-signal" aria-hidden="true">
                           “
                         </span>
                         <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
@@ -763,7 +763,7 @@ function Index() {
                       </p>
                     </div>
                     <footer className="flex items-center gap-4 border-t border-border pt-6">
-                      <span className="grid size-11 shrink-0 place-items-center rounded-full border border-accent/35 bg-accent/10 font-mono text-[11px] font-bold text-accent" aria-hidden="true">
+                      <span className="grid size-11 shrink-0 place-items-center border border-signal/40 bg-signal/10 font-mono text-[11px] font-bold text-signal" aria-hidden="true">
                         {testimonial.initials}
                       </span>
                       <cite className="block min-w-0 not-italic">
@@ -783,7 +783,7 @@ function Index() {
             <div className="mt-8 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex -space-x-2" aria-hidden="true">
                 {["SA", "CJ", "CF"].map((initials) => (
-                  <span key={initials} className="grid size-9 place-items-center rounded-full border-2 border-background bg-secondary font-mono text-[9px] font-bold text-accent">
+                  <span key={initials} className="grid size-9 place-items-center border-2 border-background bg-secondary font-mono text-[9px] font-bold text-signal">
                     {initials}
                   </span>
                 ))}
@@ -812,7 +812,7 @@ function Index() {
             {packages.map((pkg, i) => (
               <Reveal key={pkg.name} delay={i * 120}>
                 <div
-                  className={`flex h-full flex-col rounded-3xl border p-7 sm:p-8 transition-all duration-300 hover:-translate-y-1 ${
+                  className={`flex h-full flex-col border p-7 sm:p-8 transition-all duration-300 hover:-translate-y-1 ${
                     pkg.featured
                       ? "border-accent/40 bg-accent/5 shadow-[0_30px_80px_-50px_var(--accent)]"
                       : "border-white/10 bg-white/5 hover:border-accent/30"
@@ -869,8 +869,7 @@ function Index() {
 
         <section id="contact" className="max-w-7xl mx-auto px-6">
           <Reveal>
-            <div className="relative overflow-hidden bg-white/5 rounded-[40px] p-10 sm:p-12 lg:p-20 border border-white/5">
-              <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 size-[36rem] rounded-full bg-accent/15 blur-[120px] animate-glow" />
+            <div className="relative overflow-hidden border border-border bg-card/50 p-10 sm:p-12 lg:p-20">
               <div className="relative text-center">
                 <img
                   src={logo}
@@ -878,7 +877,7 @@ function Index() {
                   loading="lazy"
                   width={80}
                   height={80}
-                  className="mx-auto size-16 mb-8 animate-float"
+                  className="mx-auto size-16 mb-8"
                 />
                 <h2 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter mb-6">
                   Let's build yours.
@@ -901,7 +900,7 @@ function Index() {
                     href={c.href}
                     target={c.href.startsWith("http") ? "_blank" : undefined}
                     rel="noreferrer"
-                    className="group rounded-2xl border border-white/10 bg-background/40 p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-accent/50 hover:shadow-[0_20px_50px_-25px_var(--accent)]"
+                    className="group border border-border bg-background/40 p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-signal/50"
                   >
                     <span className="block font-mono text-[10px] uppercase tracking-[0.25em] text-accent mb-2">
                       {c.label}
