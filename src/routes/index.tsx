@@ -375,13 +375,13 @@ function ProjectCarousel() {
                   height={800}
                   className="h-full w-full object-cover object-top transition-[transform,filter] duration-500 ease-out-expo group-hover:scale-[1.025] group-hover:saturate-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
-                <span className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
+                <span className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/5 to-transparent" />
                 <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-8">
                   <span>
                     <span className="mb-2 block font-mono text-[9px] uppercase tracking-[0.25em] text-signal">
                       {project.tech.join(" / ")}
                     </span>
-                    <span className="block text-2xl font-extrabold uppercase sm:text-4xl">{project.name}</span>
+                    <span className="block text-2xl font-extrabold uppercase text-primary-foreground sm:text-4xl">{project.name}</span>
                   </span>
                   <span className="grid size-10 shrink-0 place-items-center border border-foreground/30 bg-background/50 backdrop-blur transition-colors group-hover:border-signal group-hover:text-signal">
                     <ArrowRight aria-hidden="true" />
@@ -518,7 +518,7 @@ function Index() {
             </div>
             <h1 className="mb-8 text-5xl font-extrabold uppercase leading-[0.84] sm:text-7xl md:text-8xl">
               <span className="block">We build</span>
-              <span className="block text-signal">web experiences</span>
+              <span className="block text-accent">web experiences</span>
               <span className="block">that convert.</span>
             </h1>
             <p className="max-w-[42ch] text-lg text-muted-foreground mb-10">
@@ -624,7 +624,7 @@ function Index() {
               <p className="text-sm text-muted-foreground mb-4">{p.desc}</p>
               <div className="flex flex-wrap gap-2 mb-5">
                 {p.tech.map((t) => (
-                  <span key={t} className="text-[10px] font-mono px-2 py-1 bg-white/5 rounded">
+                  <span key={t} className="border border-border bg-secondary px-2 py-1 font-mono text-[10px]">
                     {t}
                   </span>
                 ))}
@@ -814,8 +814,8 @@ function Index() {
                 <div
                   className={`flex h-full flex-col border p-7 sm:p-8 transition-all duration-300 hover:-translate-y-1 ${
                     pkg.featured
-                      ? "border-accent/40 bg-accent/5 shadow-[0_30px_80px_-50px_var(--accent)]"
-                      : "border-white/10 bg-white/5 hover:border-accent/30"
+                       ? "border-accent bg-accent/5 shadow-[0_30px_80px_-50px_var(--accent)]"
+                       : "border-border bg-card/70 hover:border-accent/30"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-3 mb-6">
@@ -848,7 +848,7 @@ function Index() {
                     className={`mt-8 block rounded-full px-6 py-4 text-center font-mono text-[11px] uppercase tracking-widest transition-all ${
                       pkg.featured
                         ? "bg-accent text-accent-foreground hover:shadow-[0_0_35px_-6px_var(--accent)]"
-                        : "border border-white/20 hover:border-accent hover:text-accent"
+                         : "border border-border hover:border-accent hover:text-accent"
                     }`}
                   >
                     Get a quote
@@ -925,7 +925,7 @@ function Index() {
                   href={GITHUB}
                   target="_blank"
                   rel="noreferrer"
-                  className="border border-white/20 px-10 py-5 rounded-full font-mono text-xs uppercase tracking-widest hover:border-accent hover:text-accent transition-colors"
+                   className="border border-border px-10 py-5 rounded-full font-mono text-xs uppercase tracking-widest hover:border-accent hover:text-accent transition-colors"
                 >
                   GitHub
                 </a>
@@ -962,7 +962,7 @@ function Index() {
       <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/90 backdrop-blur-xl px-4 py-3 flex gap-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
         <a
           href="#rates"
-          className="flex-1 rounded-full border border-white/20 py-3 text-center font-mono text-[10px] uppercase tracking-widest"
+           className="flex-1 rounded-full border border-border py-3 text-center font-mono text-[10px] uppercase tracking-widest"
         >
           See Rates
         </a>
