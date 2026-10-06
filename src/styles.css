@@ -19,10 +19,10 @@
  */
 
 @theme inline {
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Anton", "Archivo Black", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --font-editorial: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --animate-fade-up: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
   --radius-sm: calc(var(--radius) - 4px);
@@ -71,41 +71,72 @@
 }
 
 :root {
-  --radius: 0.25rem;
-  --background: oklch(0.962 0.008 84);
-  --foreground: oklch(0.215 0.022 262);
-  --card: oklch(0.985 0.004 84);
-  --card-foreground: oklch(0.215 0.022 262);
-  --popover: oklch(0.985 0.004 84);
-  --popover-foreground: oklch(0.215 0.022 262);
-  --primary: oklch(0.58 0.215 260);
-  --primary-foreground: oklch(0.985 0.004 84);
-  --secondary: oklch(0.885 0.009 84);
-  --secondary-foreground: oklch(0.215 0.022 262);
-  --muted: oklch(0.905 0.008 84);
-  --muted-foreground: oklch(0.45 0.025 262);
-  --accent: oklch(0.58 0.215 260);
-  --accent-foreground: oklch(0.985 0.004 84);
-  --signal: oklch(0.58 0.215 260);
-  --signal-foreground: oklch(0.985 0.004 84);
+  --radius: 1.5rem;
+  --background: oklch(0.11 0 0);
+  --foreground: oklch(0.99 0 0);
+  --card: oklch(0.16 0 0);
+  --card-foreground: oklch(0.99 0 0);
+  --popover: oklch(0.16 0 0);
+  --popover-foreground: oklch(0.99 0 0);
+  --primary: oklch(0.68 0.24 0);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.2 0 0);
+  --secondary-foreground: oklch(0.99 0 0);
+  --muted: oklch(0.2 0 0);
+  --muted-foreground: oklch(0.99 0 0 / 62%);
+  --accent: oklch(0.72 0.19 45);
+  --accent-foreground: oklch(0.11 0 0);
+  --signal: oklch(0.7 0.22 350);
+  --signal-foreground: oklch(0.99 0 0);
+  --grad-pink: oklch(0.68 0.25 355);
+  --grad-orange: oklch(0.74 0.19 50);
+  --grad-purple: oklch(0.56 0.25 295);
+  --gradient-accent: linear-gradient(100deg, var(--grad-pink), var(--grad-orange) 50%, var(--grad-purple));
+  --shadow-glow: 0 10px 40px -8px color-mix(in oklab, var(--grad-pink) 60%, transparent);
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.215 0.022 262 / 18%);
-  --input: oklch(0.215 0.022 262 / 24%);
-  --ring: oklch(0.58 0.215 260);
-  --chart-1: oklch(0.58 0.215 260);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
+  --border: oklch(1 0 0 / 20%);
+  --input: oklch(1 0 0 / 24%);
+  --ring: oklch(0.7 0.22 350);
+  --chart-1: oklch(0.68 0.25 355);
+  --chart-2: oklch(0.74 0.19 50);
+  --chart-3: oklch(0.56 0.25 295);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0.004 84);
-  --sidebar-foreground: oklch(0.215 0.022 262);
-  --sidebar-primary: oklch(0.58 0.215 260);
-  --sidebar-primary-foreground: oklch(0.985 0.004 84);
-  --sidebar-accent: oklch(0.885 0.009 84);
-  --sidebar-accent-foreground: oklch(0.215 0.022 262);
-  --sidebar-border: oklch(0.215 0.022 262 / 18%);
-  --sidebar-ring: oklch(0.58 0.215 260);
+  --sidebar: oklch(0.16 0 0);
+  --sidebar-foreground: oklch(0.99 0 0);
+  --sidebar-primary: oklch(0.68 0.24 0);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.2 0 0);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(1 0 0 / 20%);
+  --sidebar-ring: oklch(0.7 0.22 350);
+}
+
+/* Light sections: re-scope tokens so bg-background / text-foreground flip */
+.theme-light {
+  --background: oklch(0.959 0 0);
+  --foreground: oklch(0.11 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.11 0 0);
+  --muted-foreground: oklch(0.11 0 0 / 60%);
+  --border: oklch(0.11 0 0 / 14%);
+  --input: oklch(0.11 0 0 / 20%);
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+@utility bg-gradient-accent {
+  background-image: var(--gradient-accent);
+}
+@utility text-gradient-accent {
+  background-image: var(--gradient-accent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
 }
 
 @keyframes fade-up {
@@ -277,8 +308,6 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    background-image: linear-gradient(to right, color-mix(in oklab, var(--border) 36%, transparent) 1px, transparent 1px);
-    background-size: min(8vw, 96px) 100%;
   }
 
   h1,
