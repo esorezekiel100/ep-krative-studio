@@ -1,5 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { motion, MotionConfig, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { media } from "@/lib/site-media";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -223,73 +225,47 @@ const packages = [
 const HOURLY = "$25/hour";
 
 
-function Reveal({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(false);
+const ease = [0.16, 1, 0.3, 1] as const;
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setShown(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setShown(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
+function Reveal({ children, delay = 0, className = "" }: { children: ReactNode; delay?: number; className?: string }) {
   return (
-    <div
-      ref={ref}
-      style={{ transitionDelay: `${Math.min(delay, 240)}ms` }}
-      className={`transition-[opacity,transform] duration-500 ease-out-expo motion-reduce:transition-none ${
-        shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
-      } ${className}`}
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+      transition={{ duration: 0.7, ease, delay: Math.min(delay, 300) / 1000 }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
-const marqueeWords = [
-  "Web Design",
-  "Frontend Engineering",
-  "Landing Pages",
-  "Brand Sites",
-  "React & Tailwind",
-  "Motion & Interaction",
-];
+function GradientPill({ href, children, external = true, className = "" }: { href: string; children: ReactNode; external?: boolean; className?: string }) {
+  return (
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel="noreferrer"
+      className={`inline-flex items-center gap-2 rounded-full bg-gradient-accent px-7 py-4 text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-[transform,box-shadow] duration-300 hover:scale-105 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${className}`}
+    >
+      {children}
+    </a>
+  );
+}
+
+const clients = ["Cyberagris", "Oppora", "BridgeView", "MarketFlow", "VertexBuild", "Fundora", "Newbreed", "USA Logistics"];
 
 function Marquee() {
   return (
-    <div className="relative overflow-hidden border-y border-border py-5 mb-32 [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
-      <div className="flex w-max animate-marquee gap-10 will-change-transform">
+    <div className="relative overflow-hidden border-y border-border py-7 [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]" aria-label="Clients and partners">
+      <div className="flex w-max animate-marquee gap-10">
         {[0, 1].map((dup) => (
           <div key={dup} className="flex shrink-0 gap-10" aria-hidden={dup === 1}>
-            {marqueeWords.map((w) => (
-              <span
-                key={w}
-                className="flex items-center gap-10 font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground"
-              >
-                {w}
-                <span className="text-accent">✦</span>
+            {clients.map((c) => (
+              <span key={c} className="flex items-center gap-10 font-display text-2xl uppercase text-foreground/85 sm:text-3xl">
+                {c}
+                <span className="text-gradient-accent">✦</span>
               </span>
             ))}
           </div>
@@ -299,138 +275,460 @@ function Marquee() {
   );
 }
 
-function ProjectCarousel() {
-  const [viewportRef, embla] = useEmblaCarousel({ align: "start", loop: true });
-  const [selected, setSelected] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  const syncSelected = useCallback(() => {
-    if (embla) setSelected(embla.selectedScrollSnap());
-  }, [embla]);
-
-  useEffect(() => {
-    if (!embla) return;
-    syncSelected();
-    embla.on("select", syncSelected);
-    embla.on("reInit", syncSelected);
-    return () => {
-      embla.off("select", syncSelected);
-      embla.off("reInit", syncSelected);
-    };
-  }, [embla, syncSelected]);
-
-  useEffect(() => {
-    if (!embla || paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = window.setInterval(() => embla.scrollNext(), 5500);
-    return () => window.clearInterval(timer);
-  }, [embla, paused]);
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      embla?.scrollPrev();
-    }
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-      embla?.scrollNext();
-    }
-  };
+function Hero() {
+  const reduce = useReducedMotion();
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const x = useSpring(useTransform(mx, [-0.5, 0.5], [-18, 18]), { stiffness: 80, damping: 20 });
+  const y = useSpring(useTransform(my, [-0.5, 0.5], [-12, 12]), { stiffness: 80, damping: 20 });
 
   return (
-    <div
-      role="region"
-      aria-roledescription="carousel"
-      aria-label="Featured client projects"
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
+    <section
+      id="top"
+      onMouseMove={(e) => {
+        if (reduce) return;
+        const r = e.currentTarget.getBoundingClientRect();
+        mx.set((e.clientX - r.left) / r.width - 0.5);
+        my.set((e.clientY - r.top) / r.height - 0.5);
       }}
-      className="outline-none focus-visible:ring-2 focus-visible:ring-signal focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+      className="relative overflow-hidden px-4 pt-28 sm:px-8"
     >
-      <div ref={viewportRef} className="overflow-hidden">
-        <div className="flex touch-pan-y gap-4 sm:gap-6">
-          {featured.map((project, index) => (
-            <article
-              key={project.name}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`${index + 1} of ${featured.length}: ${project.name}`}
-              className="group min-w-0 flex-[0_0_88%] sm:flex-[0_0_72%] lg:flex-[0_0_62%]"
+      <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/3 size-[60vw] max-w-[760px] -translate-x-1/2 rounded-full bg-gradient-accent opacity-25 blur-[120px]" />
+      <motion.h1
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, ease }}
+        className="relative z-0 text-center font-display uppercase leading-[0.85] text-[clamp(3.5rem,15vw,15rem)]"
+      >
+        Hi, I'm <span className="block">Esor Ezekiel</span>
+      </motion.h1>
+      <motion.div
+        style={{ x, y }}
+        initial={{ opacity: 0, scale: 0.94 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1, ease, delay: 0.15 }}
+        className="relative z-10 mx-auto -mt-[12vw] w-[min(78vw,420px)]"
+      >
+        <img
+          src={portrait}
+          alt="Esor Ezekiel, founder of EP Studio"
+          width={853}
+          height={1280}
+          fetchPriority="high"
+          className="aspect-[4/5] w-full rounded-[2rem] border border-border object-cover shadow-glow"
+        />
+        <img src={logo} alt="" aria-hidden="true" width={80} height={80} className="absolute -bottom-5 -left-5 size-16 rounded-2xl border border-border bg-background/80 p-2.5 backdrop-blur sm:size-20" />
+      </motion.div>
+      <div className="relative z-20 mx-auto mt-10 grid max-w-7xl gap-6 pb-14 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+        <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+          <span className="mb-3 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-foreground">
+            <span className="size-2 rounded-full bg-gradient-accent" /> EP Studio — available for projects
+          </span>
+          Fast, responsive, pixel-perfect websites and web apps for businesses that want to look serious online.
+        </p>
+        <GradientPill href={WHATSAPP}>Contact me <ArrowRight className="size-4" aria-hidden="true" /></GradientPill>
+      </div>
+    </section>
+  );
+}
+
+function Gallery() {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const scale = useTransform(scrollYProgress, [0, 0.4], [0.88, 1]);
+  const tiles = [
+    { ...media.gallery[0], cls: "col-span-2 row-span-2" },
+    { ...media.gallery[1], cls: "" },
+    { ...media.gallery[2], cls: "row-span-2" },
+    { src: oppora, alt: "Oppora website", w: 1280, h: 800, cls: "" },
+  ];
+  return (
+    <section ref={ref} className="mx-auto max-w-7xl px-4 py-20 sm:px-8" aria-label="Visual gallery">
+      <motion.div style={{ scale }} className="grid auto-rows-[140px] grid-cols-2 gap-4 sm:auto-rows-[200px] md:grid-cols-4">
+        {tiles.map((t, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease, delay: i * 0.08 }}
+            className={`overflow-hidden rounded-[1.75rem] border border-border ${t.cls}`}
+          >
+            <img src={t.src} alt={t.alt} width={t.w} height={t.h} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+          </motion.div>
+        ))}
+      </motion.div>
+    </section>
+  );
+}
+
+function About() {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const up = useTransform(scrollYProgress, [0, 1], [80, -80]);
+  const down = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+  const rot = useTransform(scrollYProgress, [0, 1], [-12, 12]);
+  return (
+    <section id="about" ref={ref} className="relative overflow-hidden px-4 py-32 sm:px-8">
+      <motion.img style={{ y: up, rotate: rot }} src={media.icons} alt="" aria-hidden="true" width={1024} height={1024} loading="lazy" className="animate-float pointer-events-none absolute -left-10 top-10 w-40 sm:w-64" />
+      <motion.img style={{ y: down, rotate: rot }} src={media.icons} alt="" aria-hidden="true" width={1024} height={1024} loading="lazy" className="animate-float pointer-events-none absolute -right-8 bottom-6 w-36 -scale-x-100 sm:w-56" />
+      <Reveal className="relative mx-auto max-w-3xl text-center">
+        <h2 className="font-display uppercase leading-[0.9] text-[clamp(3.5rem,12vw,10rem)]">About me</h2>
+        <p className="mx-auto mt-8 max-w-[58ch] text-lg leading-relaxed text-muted-foreground">
+          I'm a self-driven frontend developer focused on the space where interface design meets engineering. I work daily with HTML5, CSS3, JavaScript, Tailwind CSS and React — shipping responsive, accessible interfaces for landing pages, product UIs and client sites.
+        </p>
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
+          {skills.map(([, v]) => (
+            <span key={v} className="rounded-full border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground/80">{v}</span>
+          ))}
+        </div>
+        <GradientPill href={WHATSAPP} className="mt-10">Start your project</GradientPill>
+      </Reveal>
+    </section>
+  );
+}
+
+const services = [
+  ["Frontend builds", "Pixel-perfect React and Tailwind interfaces, built mobile-first and fast."],
+  ["Custom themes", "Bespoke brand sites and design systems — no templates, no shortcuts."],
+  ["Full-stack development", "Dashboards, portals and web apps wired to real backends and auth."],
+  ["Motion & performance", "Purposeful animation and Core Web Vitals tuning that converts."],
+];
+
+function Services() {
+  return (
+    <section id="services" className="theme-light rounded-t-[2.5rem] px-4 py-28 sm:px-8">
+      <div className="mx-auto max-w-7xl">
+        <Reveal className="mb-14 flex flex-wrap items-end justify-between gap-6">
+          <h2 className="font-display uppercase leading-[0.9] text-[clamp(3.5rem,12vw,10rem)]">Services</h2>
+          <Link to="/services" className="rounded-full border border-foreground px-6 py-3 text-sm font-semibold uppercase tracking-wider transition-colors hover:bg-foreground hover:text-background">
+            Full services & pricing
+          </Link>
+        </Reveal>
+        <ol>
+          {services.map(([title, desc], i) => (
+            <motion.li
+              key={title}
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+              transition={{ duration: 0.7, ease, delay: i * 0.06 }}
+              className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-6 border-t border-border py-8 last:border-b sm:gap-12"
             >
-              <a
-                href={project.live}
-                target="_blank"
-                rel="noreferrer"
-                className="relative block aspect-[4/3] overflow-hidden border border-border bg-card"
-              >
-                <img
-                  src={project.img}
-                  alt={`Screenshot of the ${project.name} website built by Esor Ezekiel`}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  width={1280}
-                  height={800}
-                  className="h-full w-full object-cover object-top transition-[transform,filter] duration-500 ease-out-expo group-hover:scale-[1.025] group-hover:saturate-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                />
-                <span className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/5 to-transparent" />
-                <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-8">
-                  <span>
-                    <span className="mb-2 block font-mono text-[9px] uppercase tracking-[0.25em] text-signal">
-                      {project.tech.join(" / ")}
-                    </span>
-                    <span className="block text-2xl font-extrabold uppercase text-primary-foreground sm:text-4xl">{project.name}</span>
-                  </span>
-                  <span className="grid size-10 shrink-0 place-items-center border border-foreground/30 bg-background/50 backdrop-blur transition-colors group-hover:border-signal group-hover:text-signal">
-                    <ArrowRight aria-hidden="true" />
-                  </span>
-                </span>
-              </a>
-              <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
-                <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">{project.desc}</p>
-                <a href={project.code} target="_blank" rel="noreferrer" className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-signal">
-                  View code
-                </a>
+              <span className="font-display text-[clamp(3rem,9vw,7rem)] leading-none text-foreground/15">0{i + 1}</span>
+              <div className="min-w-0 sm:flex sm:items-center sm:justify-between sm:gap-10">
+                <h3 className="font-display text-3xl uppercase sm:text-5xl">{title}</h3>
+                <p className="mt-2 max-w-sm text-muted-foreground sm:mt-0">{desc}</p>
               </div>
+            </motion.li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+const stackCards = [
+  { ...featured[0], category: "Opportunity platform", extra: [fundora, agroMarket] },
+  { ...featured[1], category: "Automotive", extra: [marksGarage, usaLogistics] },
+  { ...featured[2], category: "Food & beverage", extra: [punique, newbreed] },
+  { ...featured[3], category: "E-commerce", extra: [vertexbuild, fundora] },
+];
+
+function Projects() {
+  return (
+    <section id="work" className="rounded-t-[2.5rem] bg-background px-4 py-28 sm:px-8">
+      <div className="mx-auto max-w-7xl">
+        <Reveal className="mb-16 flex flex-wrap items-end justify-between gap-6">
+          <h2 className="font-display uppercase leading-[0.9] text-[clamp(3.5rem,12vw,10rem)]">Projects</h2>
+          <span className="text-sm uppercase tracking-widest text-muted-foreground">
+            {featured.length + gridProjects.length + earlier.length} projects shipped
+          </span>
+        </Reveal>
+        <div className="space-y-8">
+          {stackCards.map((p, i) => (
+            <article
+              key={p.name}
+              style={{ top: `${6 + i * 1.5}rem` }}
+              className="sticky rounded-[2rem] border border-border bg-card p-5 shadow-[0_-20px_60px_-30px_rgb(0_0_0/0.8)] sm:p-8"
+            >
+              <div className="mb-6 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-5 sm:flex sm:justify-between">
+                <span className="font-display text-5xl text-gradient-accent sm:text-6xl">0{i + 1}</span>
+                <div className="min-w-0 sm:mr-auto sm:ml-6">
+                  <h3 className="truncate font-display text-3xl uppercase sm:text-4xl">{p.name}</h3>
+                  <p className="text-sm text-muted-foreground">{p.category} · {(p.tech ?? []).join(" / ")}</p>
+                </div>
+                <div className="col-span-2 flex gap-3">
+                  <a href={p.live} target="_blank" rel="noreferrer" className="rounded-full border border-foreground/60 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider transition-[transform,background-color,color] hover:scale-105 hover:bg-foreground hover:text-background">
+                    Live project
+                  </a>
+                  <a href={p.code} target="_blank" rel="noreferrer" className="rounded-full px-3 py-2.5 text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground">
+                    Code
+                  </a>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-[2fr_1fr_1fr] sm:gap-4">
+                {[p.img, ...p.extra].map((src, j) => (
+                  <img
+                    key={j}
+                    src={src}
+                    alt={j === 0 ? `Screenshot of ${p.name}` : ""}
+                    width={1280}
+                    height={800}
+                    loading="lazy"
+                    className={`h-40 w-full rounded-[1.25rem] object-cover object-top sm:h-64 ${j === 0 ? "col-span-2 sm:col-span-1" : ""}`}
+                  />
+                ))}
+              </div>
+              <p className="mt-5 max-w-2xl text-sm text-muted-foreground">{p.desc}</p>
             </article>
           ))}
         </div>
       </div>
+    </section>
+  );
+}
 
-      <div className="mt-8 flex flex-wrap items-center gap-5">
-        <div className="h-px flex-1 overflow-hidden bg-border" aria-hidden="true">
-          <span className="carousel-progress block h-full w-full bg-signal" style={{ transform: `scaleX(${(selected + 1) / featured.length})` }} />
-        </div>
-        <span className="min-w-14 font-mono text-[10px] text-signal" aria-live="polite">
-          {String(selected + 1).padStart(2, "0")} / {String(featured.length).padStart(2, "0")}
-        </span>
-        <div className="flex items-center gap-1" aria-label="Choose project slide">
-          {featured.map((project, index) => (
-            <Button
-              key={project.name}
-              variant="ghost"
-              size="icon"
-              onClick={() => embla?.scrollTo(index)}
-              aria-label={`Go to slide ${index + 1}: ${project.name}`}
-              aria-current={selected === index ? "true" : undefined}
-              className="group/indicator min-h-11 min-w-11 rounded-none hover:bg-transparent"
-            >
-              <span className={`block h-1 transition-all duration-300 ${selected === index ? "w-7 bg-signal" : "w-3 bg-muted-foreground group-hover/indicator:bg-foreground"}`} />
-            </Button>
-          ))}
-        </div>
+function MoreWorkCarousel() {
+  const [viewportRef, embla] = useEmblaCarousel({ align: "start", loop: true });
+  const [selected, setSelected] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const sync = useCallback(() => embla && setSelected(embla.selectedScrollSnap()), [embla]);
+
+  useEffect(() => {
+    if (!embla) return;
+    sync();
+    embla.on("select", sync);
+    embla.on("reInit", sync);
+    return () => {
+      embla.off("select", sync);
+      embla.off("reInit", sync);
+    };
+  }, [embla, sync]);
+
+  useEffect(() => {
+    if (!embla || paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t = window.setInterval(() => embla.scrollNext(), 5500);
+    return () => window.clearInterval(t);
+  }, [embla, paused]);
+
+  return (
+    <section className="mx-auto max-w-7xl px-4 pb-28 sm:px-8" aria-labelledby="more-work">
+      <Reveal className="mb-8 flex items-end justify-between gap-4">
+        <h2 id="more-work" className="font-display text-4xl uppercase sm:text-6xl">More work</h2>
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={() => embla?.scrollPrev()} aria-label="Previous project" className="min-h-11 min-w-11 rounded-none border-border bg-transparent hover:border-signal hover:bg-signal hover:text-signal-foreground">
+          <Button variant="outline" size="icon" onClick={() => embla?.scrollPrev()} aria-label="Previous project" className="min-h-11 min-w-11 rounded-full bg-transparent">
             <ArrowLeft aria-hidden="true" />
           </Button>
-          <Button variant="outline" size="icon" onClick={() => embla?.scrollNext()} aria-label="Next project" className="min-h-11 min-w-11 rounded-none border-border bg-transparent hover:border-signal hover:bg-signal hover:text-signal-foreground">
+          <Button variant="outline" size="icon" onClick={() => embla?.scrollNext()} aria-label="Next project" className="min-h-11 min-w-11 rounded-full bg-transparent">
             <ArrowRight aria-hidden="true" />
           </Button>
         </div>
+      </Reveal>
+      <div
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="More client projects"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowLeft") { e.preventDefault(); embla?.scrollPrev(); }
+          if (e.key === "ArrowRight") { e.preventDefault(); embla?.scrollNext(); }
+        }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocusCapture={() => setPaused(true)}
+        onBlurCapture={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setPaused(false); }}
+        className="rounded-[2rem] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <div ref={viewportRef} className="overflow-hidden">
+          <div className="flex touch-pan-y gap-4">
+            {gridProjects.map((p, i) => (
+              <article key={p.name} role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${gridProjects.length}: ${p.name}`} className="group min-w-0 flex-[0_0_85%] sm:flex-[0_0_48%] lg:flex-[0_0_32%]">
+                <div className="h-full rounded-[1.75rem] border border-border bg-card p-4 transition-transform duration-300 group-hover:-translate-y-1.5">
+                  <a href={p.live} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-[1.25rem]">
+                    <img src={p.img} alt={`Screenshot of ${p.name}`} width={1280} height={800} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
+                  </a>
+                  <h3 className="mt-4 font-display text-2xl uppercase">{p.name}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{p.desc}</p>
+                  <div className="mt-4 flex gap-4 text-xs uppercase tracking-wider">
+                    <a href={p.live} target="_blank" rel="noreferrer" className="text-gradient-accent font-semibold">Live demo</a>
+                    <a href={p.code} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground">Code</a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-1" aria-label="Choose project slide">
+          {gridProjects.map((p, i) => (
+            <button key={p.name} onClick={() => embla?.scrollTo(i)} aria-label={`Go to slide ${i + 1}: ${p.name}`} aria-current={selected === i ? "true" : undefined} className="grid min-h-11 min-w-11 place-items-center">
+              <span className={`block h-1.5 rounded-full transition-all duration-300 ${selected === i ? "w-8 bg-gradient-accent" : "w-3 bg-foreground/30"}`} />
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
+      <ul className="mt-14 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
+        {earlier.map((p) => (
+          <li key={p.name} className="border-b border-border">
+            <a href={p.code} target="_blank" rel="noreferrer" className="flex items-baseline justify-between gap-4 py-4 hover:text-gradient-accent">
+              <span className="font-semibold">{p.name}</span>
+              <span className="text-right text-xs text-muted-foreground">{p.desc}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+const testimonials = [
+  { quote: "EP Studio understood our vision and turned it into a polished digital experience. The attention to detail, communication and final delivery were excellent.", name: "Shola Anthony", role: "Cyberagris", initials: "SA" },
+  { quote: "Working with EP Studio was smooth from start to finish. The website feels modern, works beautifully on every screen and presents the brand with confidence.", name: "Celestine Junnior", role: "Client", initials: "CJ" },
+  { quote: "Esor brings creativity and technical skill together in a way that makes the entire process easy. The result was professional, fast and better than expected.", name: "Clement Faith", role: "Client", initials: "CF" },
+];
+
+function Testimonials() {
+  return (
+    <section className="relative mx-auto max-w-7xl px-4 pb-28 sm:px-8" aria-labelledby="testimonials-heading">
+      <img src={media.icons} alt="" aria-hidden="true" width={1024} height={1024} loading="lazy" className="animate-float pointer-events-none absolute -top-10 right-2 w-24 sm:w-36" />
+      <Reveal>
+        <h2 id="testimonials-heading" className="mb-14 max-w-3xl font-display uppercase leading-[0.9] text-[clamp(2.75rem,8vw,6.5rem)]">
+          What clients are <span className="text-gradient-accent">saying</span>
+        </h2>
+      </Reveal>
+      <div className="grid gap-5 md:grid-cols-3">
+        {testimonials.map((t, i) => (
+          <Reveal key={t.name} delay={i * 80} className={i === 1 ? "md:mt-12" : ""}>
+            <blockquote className="flex h-full flex-col justify-between gap-10 rounded-[1.75rem] border border-border bg-card p-7 transition-transform duration-300 hover:-translate-y-1.5">
+              <p className="text-lg leading-relaxed text-foreground/90">“{t.quote}”</p>
+              <footer className="flex items-center gap-4">
+                <span className="grid size-12 shrink-0 place-items-center rounded-full bg-gradient-accent text-sm font-bold text-primary-foreground" aria-hidden="true">{t.initials}</span>
+                <cite className="not-italic">
+                  <span className="block font-semibold">{t.name}</span>
+                  <span className="block text-xs uppercase tracking-wider text-muted-foreground">{t.role}</span>
+                </cite>
+              </footer>
+            </blockquote>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Rates() {
+  return (
+    <section id="rates" className="mx-auto max-w-7xl px-4 pb-28 sm:px-8">
+      <Reveal className="mb-12 flex flex-wrap items-end justify-between gap-4">
+        <h2 className="font-display text-5xl uppercase sm:text-7xl">Rates</h2>
+        <p className="text-sm text-muted-foreground">Hourly: <span className="font-semibold text-foreground">{HOURLY}</span> · Fixed quotes available</p>
+      </Reveal>
+      <div className="grid gap-5 md:grid-cols-3">
+        {packages.map((pkg, i) => (
+          <Reveal key={pkg.name} delay={i * 80}>
+            <div className={`flex h-full flex-col rounded-[1.75rem] border p-7 transition-transform duration-300 hover:-translate-y-1.5 ${pkg.featured ? "border-transparent bg-gradient-accent text-primary-foreground shadow-glow" : "border-border bg-card"}`}>
+              <div className="mb-6 flex items-center justify-between">
+                <span className="text-xs uppercase tracking-[0.2em] opacity-80">{pkg.name}</span>
+                {pkg.featured && <span className="rounded-full bg-background/25 px-3 py-1 text-[10px] uppercase tracking-widest">Popular</span>}
+              </div>
+              <p className="font-display text-6xl">{pkg.price}</p>
+              <p className="mt-2 text-xs uppercase tracking-widest opacity-75">{pkg.note} · {pkg.time}</p>
+              <ul className="mt-7 flex-1 space-y-3 text-sm opacity-90">
+                {pkg.items.map((item) => <li key={item}>✦ {item}</li>)}
+              </ul>
+              <a href={WHATSAPP} target="_blank" rel="noreferrer" className={`mt-8 rounded-full px-6 py-4 text-center text-xs font-semibold uppercase tracking-widest transition-transform hover:scale-105 ${pkg.featured ? "bg-background text-foreground" : "border border-border hover:border-foreground"}`}>
+                Get a quote
+              </a>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+      <p className="mt-6 max-w-2xl text-xs text-muted-foreground">All prices are starting points and depend on scope. 50% upfront, 50% on delivery.</p>
+    </section>
+  );
+}
+
+function Contact() {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = `Hi EP Studio, I'm ${form.name} (${form.email}).\n\n${form.message}`;
+    window.open(`${WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+  };
+  const field = "w-full rounded-2xl border border-border bg-card px-5 py-4 outline-none transition-colors focus:border-foreground";
+  return (
+    <section id="contact" className="theme-light rounded-t-[2.5rem] px-4 py-28 sm:px-8">
+      <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-2">
+        <Reveal>
+          <h2 className="font-display uppercase leading-[0.88] text-[clamp(3.25rem,10vw,8rem)]">Let's get in touch</h2>
+          <ul className="mt-10 space-y-3 text-lg">
+            <li><a href={WHATSAPP} target="_blank" rel="noreferrer" className="hover:underline">WhatsApp · {PHONE}</a></li>
+            <li><a href={`tel:+234${PHONE.slice(1)}`} className="hover:underline">Call · {PHONE}</a></li>
+            <li><a href={`mailto:${EMAIL}`} className="break-all hover:underline">{EMAIL}</a></li>
+          </ul>
+        </Reveal>
+        <Reveal delay={100}>
+          <form onSubmit={submit} className="space-y-4">
+            <label className="block"><span className="sr-only">Name</span>
+              <input required placeholder="Your name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={field} />
+            </label>
+            <label className="block"><span className="sr-only">Email</span>
+              <input required type="email" placeholder="Your email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={field} />
+            </label>
+            <label className="block"><span className="sr-only">Message</span>
+              <textarea required rows={6} placeholder="Tell me about your project" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={field} />
+            </label>
+            <button type="submit" className="w-full rounded-full bg-gradient-accent px-8 py-5 text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-[transform,box-shadow] hover:scale-[1.02] hover:shadow-glow">
+              Send message
+            </button>
+            <p className="text-xs text-muted-foreground">Your message opens in WhatsApp, ready to send.</p>
+          </form>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="bg-background px-4 pb-28 pt-6 sm:px-8 md:pb-8">
+      <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-border bg-card p-8 sm:p-12">
+        <div className="grid gap-10 sm:grid-cols-3">
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="EP Studio logo" width={48} height={48} loading="lazy" className="size-12" />
+            <div>
+              <p className="font-display text-2xl uppercase">EP Studio</p>
+              <p className="text-sm text-muted-foreground">Esor Ezekiel</p>
+            </div>
+          </div>
+          <div>
+            <p className="mb-3 text-xs uppercase tracking-widest text-muted-foreground">Social</p>
+            <ul className="space-y-2">
+              <li><a href={LINKEDIN} target="_blank" rel="noreferrer" className="hover:text-gradient-accent">LinkedIn</a></li>
+              <li><a href={GITHUB} target="_blank" rel="noreferrer" className="hover:text-gradient-accent">GitHub</a></li>
+              <li><Link to="/services" className="hover:text-gradient-accent">Services</Link></li>
+              <li><Link to="/portal" className="hover:text-gradient-accent">Client login</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="mb-3 text-xs uppercase tracking-widest text-muted-foreground">Contact</p>
+            <ul className="space-y-2">
+              <li><a href={WHATSAPP} target="_blank" rel="noreferrer">WhatsApp · {PHONE}</a></li>
+              <li><a href={`mailto:${EMAIL}`} className="break-all">{EMAIL}</a></li>
+            </ul>
+          </div>
+        </div>
+        <div aria-hidden="true" className="mt-14 flex select-none items-end justify-between gap-2 font-display uppercase leading-none text-[clamp(4rem,17vw,15rem)]">
+          <span className="text-gradient-accent">EP</span>
+          <span className="flex gap-2 sm:gap-4">
+            <span className="inline-block size-[0.6em] rounded-full bg-gradient-accent" />
+            <span className="inline-block size-[0.6em] rotate-45 rounded-[0.15em] border-[0.06em] border-foreground" />
+            <span className="inline-block size-[0.6em] rounded-t-full bg-foreground" />
+          </span>
+        </div>
+        <p className="mt-6 text-xs text-muted-foreground">© {new Date().getFullYear()} EP Studio — Esor Ezekiel</p>
+      </div>
+    </footer>
   );
 }
 
@@ -443,540 +741,43 @@ function Index() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const links: [string, string][] = [["About", "#about"], ["Services", "#services"], ["Projects", "#work"], ["Rates", "#rates"], ["Contact", "#contact"]];
+
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background font-sans text-foreground selection:bg-signal selection:text-signal-foreground">
-
-      <nav
-        className={`fixed top-0 w-full z-50 transition-[background-color,border-color,padding] duration-200 ${
-          scrolled
-            ? "border-b border-border bg-background/70 backdrop-blur-xl py-2"
-            : "border-b border-transparent py-4"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
-          <a href="#top" className="group flex items-center gap-3">
-            <span className="relative grid size-10 place-items-center border border-border bg-card transition-colors duration-200 group-hover:border-accent">
-              <img
-                src={logo}
-                alt="EP Studio logo"
-                width={40}
-                height={40}
-                className="relative size-7 object-contain"
-              />
-            </span>
-            <span className="font-mono text-sm tracking-[0.2em] uppercase font-bold">
-              EP <span className="text-accent">Studio</span>
-            </span>
-          </a>
-          <div className="flex items-center gap-6 sm:gap-8 text-[10px] font-mono uppercase tracking-widest">
-            <Link
-              to="/services"
-              className="relative hidden sm:inline-block hover:text-accent transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-accent after:transition-all after:duration-300 hover:after:w-full"
-            >
-              Services
-            </Link>
-            {[
-              ["Work", "#work"],
-              ["About", "#about"],
-              ["Rates", "#rates"],
-              ["Contact", "#contact"],
-            ].map(([label, href]) => (
-              <a
-                key={href}
-                href={href}
-                className="relative hidden sm:inline-block hover:text-accent transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-accent after:transition-all after:duration-300 hover:after:w-full"
-              >
-                {label}
-              </a>
-            ))}
-            <Link
-              to="/portal"
-              className="hover:text-accent transition-colors"
-            >
-              Client login
-            </Link>
-            <a
-              href={WHATSAPP}
-              target="_blank"
-              rel="noreferrer"
-              className="bg-accent px-4 py-2 text-accent-foreground font-bold transition-colors hover:bg-signal hover:text-signal-foreground"
-            >
-              WhatsApp
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen overflow-x-clip bg-background font-sans text-foreground selection:bg-signal selection:text-signal-foreground">
+        <nav className={`fixed inset-x-0 top-0 z-50 transition-[background-color,padding] duration-200 ${scrolled ? "bg-background/70 py-3 backdrop-blur-xl" : "py-5"}`}>
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 text-[11px] uppercase tracking-[0.2em] sm:px-8">
+            <a href="#top" className="flex items-center gap-2 font-semibold">
+              <img src={logo} alt="EP Studio logo" width={32} height={32} className="size-8" />
+              EP Studio
             </a>
+            {links.map(([label, href]) => (
+              <a key={href} href={href} className="hidden transition-opacity hover:opacity-60 md:inline">{label}</a>
+            ))}
+            <Link to="/portal" className="hover:opacity-60">Client login</Link>
           </div>
+        </nav>
+
+        <main>
+          <Hero />
+          <Marquee />
+          <Gallery />
+          <About />
+          <Services />
+          <Projects />
+          <MoreWorkCarousel />
+          <Testimonials />
+          <Rates />
+          <Contact />
+        </main>
+        <Footer />
+
+        <div className="fixed inset-x-0 bottom-0 z-50 flex gap-3 border-t border-border bg-background/90 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-xl md:hidden">
+          <a href="#rates" className="flex-1 rounded-full border border-border py-3 text-center text-[11px] uppercase tracking-widest">See rates</a>
+          <a href={WHATSAPP} target="_blank" rel="noreferrer" className="flex-1 rounded-full bg-gradient-accent py-3 text-center text-[11px] font-bold uppercase tracking-widest text-primary-foreground">WhatsApp</a>
         </div>
-      </nav>
-
-      <main id="top" className="pt-32 pb-24">
-        <section className="hero-enter mx-auto mb-24 grid max-w-7xl gap-12 px-6 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-7">
-            <div className="flex items-center gap-3 mb-8">
-              <span className="relative inline-flex size-2 rounded-full bg-accent" />
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                Available for new projects
-              </span>
-            </div>
-            <h1 className="mb-8 text-5xl font-extrabold uppercase leading-[0.84] sm:text-7xl md:text-8xl">
-              <span className="block">We build</span>
-              <span className="block text-accent">web experiences</span>
-              <span className="block">that convert.</span>
-            </h1>
-            <p className="max-w-[42ch] text-lg text-muted-foreground mb-10">
-              EP Studio is the design and frontend practice of Esor Ezekiel — fast, responsive,
-              pixel-perfect websites for businesses that want to look serious online.
-            </p>
-            <div className="flex flex-wrap items-center gap-4">
-              <a
-                href={WHATSAPP}
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex items-center gap-3 bg-accent px-8 py-4 font-mono text-xs font-medium uppercase tracking-widest text-accent-foreground transition-colors duration-200 hover:bg-signal hover:text-signal-foreground"
-              >
-                Start your project
-                <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-              </a>
-              <a
-                href="#work"
-                className="inline-flex items-center gap-2 px-2 py-4 font-mono text-xs uppercase tracking-widest text-muted-foreground underline underline-offset-8 decoration-border hover:text-foreground hover:decoration-accent transition-colors duration-200"
-              >
-                View our work
-              </a>
-            </div>
-          </div>
-          <div className="lg:col-span-5 relative">
-            <img
-              src={portrait}
-              alt="Esor Ezekiel, founder of EP Studio, standing in front of a large glowing sun"
-              width={1080}
-              height={1350}
-              fetchPriority="high"
-              decoding="async"
-              className="relative z-10 aspect-[4/5] w-full border border-border object-cover saturate-[0.9]"
-            />
-            <img
-              src={logo}
-              alt=""
-              aria-hidden="true"
-              width={96}
-              height={96}
-              className="absolute z-20 -bottom-5 -left-5 size-20 border border-border bg-background/90 p-3 backdrop-blur"
-            />
-          </div>
-        </section>
-
-        <Marquee />
-
-
-        <section id="about" className="max-w-7xl mx-auto px-6 mb-32">
-          <Reveal>
-          <div className="grid lg:grid-cols-12 gap-12">
-            <div className="lg:col-span-4">
-              <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent">About</h2>
-            </div>
-            <div className="lg:col-span-8 space-y-6 text-lg text-muted-foreground max-w-[60ch]">
-              <p>
-                I'm a self-driven frontend developer focused on the space where interface design
-                meets engineering. What drives me is the detail: the spacing that finally lands, the
-                interaction that feels effortless, the page that loads before you notice it.
-              </p>
-              <p>
-                I work daily with HTML5, CSS3, JavaScript, Tailwind CSS and React, shipping
-                responsive, accessible interfaces for landing pages, product UIs and client sites —
-                available for freelance work and full-time roles.
-              </p>
-            </div>
-          </div>
-          </Reveal>
-        </section>
-
-        <section id="work" className="max-w-7xl mx-auto px-6 mb-32">
-          <Reveal>
-          <div className="flex justify-between items-end border-b border-border pb-6 mb-16">
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
-              Selected Client Work
-            </h2>
-            <span className="font-mono text-[10px] text-muted-foreground">
-              ({featured.length + gridProjects.length + earlier.length} Projects)
-            </span>
-          </div>
-          </Reveal>
-
-          <Reveal><ProjectCarousel /></Reveal>
-        </section>
-
-        <section className="max-w-7xl mx-auto px-6 mb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {gridProjects.map((p, i) => (
-            <Reveal key={p.name} delay={(i % 3) * 60}>
-            <article
-              className="h-full border border-border bg-card/50 p-5 transition-[transform,border-color,background-color] duration-200 group hover:-translate-y-1 hover:border-signal/50 hover:bg-card"
-            >
-              <a href={p.live} target="_blank" rel="noreferrer" className="block">
-                <img
-                  src={p.img}
-                  alt={`Screenshot of the ${p.name} website built by Esor Ezekiel`}
-                  loading="lazy"
-                  width={1280}
-                  height={800}
-                  className="mb-6 aspect-[16/10] w-full border-b border-border bg-secondary object-cover object-top saturate-[0.9] transition-[filter,transform] duration-300 group-hover:scale-[1.015] group-hover:saturate-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                />
-              </a>
-              <h4 className="text-xl font-bold mb-2">{p.name}</h4>
-              <p className="text-sm text-muted-foreground mb-4">{p.desc}</p>
-              <div className="flex flex-wrap gap-2 mb-5">
-                {p.tech.map((t) => (
-                  <span key={t} className="border border-border bg-secondary px-2 py-1 font-mono text-[10px]">
-                    {t}
-                  </span>
-                ))}
-              </div>
-              <div className="flex gap-4 font-mono text-[10px] uppercase tracking-widest">
-                <a
-                  href={p.live}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-accent hover:opacity-80"
-                >
-                  Live Demo
-                </a>
-                <a
-                  href={p.code}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-accent transition-colors"
-                >
-                  View Code
-                </a>
-              </div>
-            </article>
-            </Reveal>
-          ))}
-        </section>
-
-        <section className="max-w-7xl mx-auto px-6 mb-32">
-          <Reveal>
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-8">
-              More Builds
-            </h2>
-          </Reveal>
-          <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8">
-            {earlier.map((p) => (
-              <li key={p.name} className="border-b border-border">
-                <a
-                  href={p.code}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-baseline justify-between gap-4 py-5 group"
-                >
-                  <span className="font-bold transition-colors group-hover:text-signal">
-                    {p.name}
-                  </span>
-                  <span className="text-[11px] font-mono text-muted-foreground text-right">
-                    {p.desc}
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-
-        <section className="max-w-7xl mx-auto px-6 mb-32 py-24 border-y border-border">
-          <div className="grid lg:grid-cols-12 gap-12">
-            <Reveal className="lg:col-span-4">
-              <h2 className="text-4xl font-extrabold uppercase mb-4">
-                Technical <br />
-                <span className="text-signal">Skillset</span>
-              </h2>
-              <p className="text-muted-foreground">
-                Built on a foundation of precision and performance optimization.
-              </p>
-            </Reveal>
-            <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-6">
-              {skills.map(([label, value], i) => (
-                <Reveal key={value} delay={Math.min(i * 40, 240)} className="space-y-2">
-                  <span className="block text-xs font-mono text-muted-foreground uppercase tracking-widest">
-                    {label}
-                  </span>
-                  <p className="font-bold">{value}</p>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="relative max-w-7xl mx-auto px-6 mb-32" aria-labelledby="testimonials-heading">
-          <Reveal>
-            <div className="mb-12 grid gap-8 border-b border-border pb-9 md:grid-cols-[1fr_auto] md:items-end">
-              <div>
-                <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-accent">
-                  EP Studio / Testimonials
-                </p>
-                <h2 id="testimonials-heading" className="text-4xl font-extrabold uppercase sm:text-5xl">
-                  Voices of <span className="text-signal">impact.</span>
-                </h2>
-              </div>
-              <p className="max-w-sm text-sm leading-relaxed text-muted-foreground md:text-right">
-                Real words from people who trusted EP Studio to bring their ideas to life.
-              </p>
-            </div>
-          </Reveal>
-
-          <div className="grid gap-5 md:grid-cols-3">
-            {[
-              {
-                quote:
-                  "EP Studio understood our vision and turned it into a polished digital experience. The attention to detail, communication and final delivery were excellent.",
-                name: "Shola Anthony",
-                role: "Cyberagris",
-                initials: "SA",
-              },
-              {
-                quote:
-                  "Working with EP Studio was smooth from start to finish. The website feels modern, works beautifully on every screen and presents the brand with confidence.",
-                name: "Celestine Junnior",
-                role: "Client",
-                initials: "CJ",
-              },
-              {
-                quote:
-                  "Esor brings creativity and technical skill together in a way that makes the entire process easy. The result was professional, fast and better than expected.",
-                name: "Clement Faith",
-                role: "Client",
-                initials: "CF",
-              },
-            ].map((testimonial, i) => (
-              <Reveal key={testimonial.name} delay={i * 60}>
-                <blockquote className="testimonial-card group relative flex min-h-[360px] h-full overflow-hidden border border-border bg-card/55 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-signal/50 sm:p-8">
-                  <span className="testimonial-sweep pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-accent/5 blur-xl" aria-hidden="true" />
-                  <div className="relative flex w-full flex-col justify-between gap-10">
-                    <div>
-                      <div className="mb-8 flex items-start justify-between">
-                        <span className="font-editorial text-7xl italic leading-none text-signal/35 transition-colors duration-300 group-hover:text-signal" aria-hidden="true">
-                          “
-                        </span>
-                        <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
-                          0{i + 1}
-                        </span>
-                      </div>
-                      <p className="font-editorial text-xl italic leading-relaxed text-foreground/90 text-pretty sm:text-[1.35rem]">
-                        {testimonial.quote}
-                      </p>
-                    </div>
-                    <footer className="flex items-center gap-4 border-t border-border pt-6">
-                      <span className="grid size-11 shrink-0 place-items-center border border-signal/40 bg-signal/10 font-mono text-[11px] font-bold text-signal" aria-hidden="true">
-                        {testimonial.initials}
-                      </span>
-                      <cite className="block min-w-0 not-italic">
-                        <span className="block text-sm font-semibold uppercase tracking-wider">{testimonial.name}</span>
-                        <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
-                          {testimonial.role}
-                        </span>
-                      </cite>
-                    </footer>
-                  </div>
-                </blockquote>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={260}>
-            <div className="mt-8 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex -space-x-2" aria-hidden="true">
-                {["SA", "CJ", "CF"].map((initials) => (
-                  <span key={initials} className="grid size-9 place-items-center border-2 border-background bg-secondary font-mono text-[9px] font-bold text-signal">
-                    {initials}
-                  </span>
-                ))}
-              </div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                Three client voices <span className="mx-2 text-accent">✦</span> One standard of excellence
-              </p>
-            </div>
-          </Reveal>
-        </section>
-
-        <section id="rates" className="max-w-7xl mx-auto px-6 mb-32">
-          <Reveal>
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 border-b border-border pb-6 mb-12">
-              <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
-                Rates & Packages
-              </h2>
-              <p className="font-mono text-[11px] text-muted-foreground">
-                Hourly: <span className="text-foreground font-bold">{HOURLY}</span> · Fixed quotes
-                available
-              </p>
-            </div>
-          </Reveal>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {packages.map((pkg, i) => (
-              <Reveal key={pkg.name} delay={i * 120}>
-                <div
-                  className={`flex h-full flex-col border p-7 sm:p-8 transition-all duration-300 hover:-translate-y-1 ${
-                    pkg.featured
-                       ? "border-accent bg-accent/5 shadow-[0_30px_80px_-50px_var(--accent)]"
-                       : "border-border bg-card/70 hover:border-accent/30"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-3 mb-6">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                      {pkg.name}
-                    </span>
-                    {pkg.featured && (
-                      <span className="rounded-full bg-accent px-3 py-1 font-mono text-[9px] uppercase tracking-widest text-accent-foreground">
-                        Popular
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-4xl sm:text-5xl font-extrabold tracking-tighter">{pkg.price}</p>
-                  <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-                    {pkg.note}
-                  </p>
-                  <p className="mt-1 font-mono text-[11px] text-accent">Delivery {pkg.time}</p>
-                  <ul className="mt-7 space-y-3 text-sm text-muted-foreground">
-                    {pkg.items.map((item) => (
-                      <li key={item} className="flex gap-3">
-                        <span className="text-accent">✦</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    href={WHATSAPP}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`mt-8 block rounded-full px-6 py-4 text-center font-mono text-[11px] uppercase tracking-widest transition-all ${
-                      pkg.featured
-                        ? "bg-accent text-accent-foreground hover:shadow-[0_0_35px_-6px_var(--accent)]"
-                         : "border border-border hover:border-accent hover:text-accent"
-                    }`}
-                  >
-                    Get a quote
-                  </a>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal>
-            <p className="mt-8 max-w-2xl font-mono text-[11px] leading-relaxed text-muted-foreground">
-              All prices are starting points and depend on scope. 50% upfront, 50% on delivery.
-              Ongoing maintenance and retainers quoted separately.
-            </p>
-          </Reveal>
-        </section>
-
-
-        <section id="contact" className="max-w-7xl mx-auto px-6">
-          <Reveal>
-            <div className="relative overflow-hidden border border-border bg-card/50 p-10 sm:p-12 lg:p-20">
-              <div className="relative text-center">
-                <img
-                  src={logo}
-                  alt="EP Studio logo"
-                  loading="lazy"
-                  width={80}
-                  height={80}
-                  className="mx-auto size-16 mb-8"
-                />
-                <h2 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter mb-6">
-                  Let's build yours.
-                </h2>
-                <p className="max-w-xl mx-auto text-muted-foreground mb-12">
-                  Tell EP Studio about your project — websites, landing pages, product interfaces.
-                  Fastest reply is on WhatsApp.
-                </p>
-              </div>
-
-              <div className="relative grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                {[
-                  { label: "WhatsApp", value: PHONE, href: WHATSAPP },
-                  { label: "Call", value: PHONE, href: `tel:+234${PHONE.slice(1)}` },
-                  { label: "Email", value: EMAIL, href: `mailto:${EMAIL}` },
-                  { label: "LinkedIn", value: "Esor Ezekiel", href: LINKEDIN },
-                ].map((c) => (
-                  <a
-                    key={c.label}
-                    href={c.href}
-                    target={c.href.startsWith("http") ? "_blank" : undefined}
-                    rel="noreferrer"
-                    className="group border border-border bg-background/40 p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-signal/50"
-                  >
-                    <span className="block font-mono text-[10px] uppercase tracking-[0.25em] text-accent mb-2">
-                      {c.label}
-                    </span>
-                    <span className="block text-sm font-bold break-words group-hover:text-accent transition-colors">
-                      {c.value}
-                    </span>
-                  </a>
-                ))}
-              </div>
-
-              <div className="relative mt-10 flex flex-wrap justify-center gap-4">
-                <a
-                  href={WHATSAPP}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="bg-accent text-accent-foreground px-10 py-5 rounded-full font-bold uppercase text-xs tracking-widest hover:shadow-[0_0_40px_-6px_var(--accent)] transition-shadow"
-                >
-                  Chat on WhatsApp
-                </a>
-                <a
-                  href={GITHUB}
-                  target="_blank"
-                  rel="noreferrer"
-                   className="border border-border px-10 py-5 rounded-full font-mono text-xs uppercase tracking-widest hover:border-accent hover:text-accent transition-colors"
-                >
-                  GitHub
-                </a>
-              </div>
-            </div>
-          </Reveal>
-        </section>
-      </main>
-
-      <footer className="max-w-7xl mx-auto px-6 py-12 pb-28 md:pb-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-border">
-        <span className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          <img src={logo} alt="" aria-hidden="true" loading="lazy" width={24} height={24} className="size-6" />
-          © {new Date().getFullYear()} EP Studio — Esor Ezekiel
-        </span>
-        <div className="flex flex-wrap justify-center gap-6 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          <Link to="/services" className="hover:text-accent">
-            Services
-          </Link>
-          <a href={WHATSAPP} target="_blank" rel="noreferrer" className="hover:text-accent">
-            WhatsApp
-          </a>
-          <a href={LINKEDIN} target="_blank" rel="noreferrer" className="hover:text-accent">
-            LinkedIn
-          </a>
-          <a href={GITHUB} target="_blank" rel="noreferrer" className="hover:text-accent">
-            GitHub
-          </a>
-          <a href={`mailto:${EMAIL}`} className="hover:text-accent">
-            Email
-          </a>
-        </div>
-      </footer>
-
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/90 backdrop-blur-xl px-4 py-3 flex gap-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-        <a
-          href="#rates"
-           className="flex-1 rounded-full border border-border py-3 text-center font-mono text-[10px] uppercase tracking-widest"
-        >
-          See Rates
-        </a>
-        <a
-          href={WHATSAPP}
-          target="_blank"
-          rel="noreferrer"
-          className="flex-1 rounded-full bg-accent py-3 text-center font-mono text-[10px] font-bold uppercase tracking-widest text-accent-foreground"
-        >
-          WhatsApp
-        </a>
       </div>
-
-
-    </div>
+    </MotionConfig>
   );
 }
