@@ -456,7 +456,7 @@ function Projects() {
                 <span className="font-display text-5xl text-gradient-accent sm:text-6xl">0{i + 1}</span>
                 <div className="min-w-0 sm:mr-auto sm:ml-6">
                   <h3 className="truncate font-display text-3xl uppercase sm:text-4xl">{p.name}</h3>
-                  <p className="text-sm text-muted-foreground">{p.category} · {p.tech.join(" / ")}</p>
+                  <p className="text-sm text-muted-foreground">{p.category} · {(p.tech ?? []).join(" / ")}</p>
                 </div>
                 <div className="col-span-2 flex gap-3">
                   <a href={p.live} target="_blank" rel="noreferrer" className="rounded-full border border-foreground/60 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider transition-[transform,background-color,color] hover:scale-105 hover:bg-foreground hover:text-background">
